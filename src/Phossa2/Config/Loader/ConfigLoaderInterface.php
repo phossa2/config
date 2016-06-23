@@ -12,7 +12,7 @@
  */
 /*# declare(strict_types=1); */
 
-namespace Phossa2\Config;
+namespace Phossa2\Config\Loader;
 
 /**
  * ConfigLoaderInterface

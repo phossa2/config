@@ -12,13 +12,13 @@
  */
 /*# declare(strict_types=1); */
 
-namespace Phossa2\Config;
+namespace Phossa2\Config\Loader;
 
 use Phossa2\Shared\Reader\Reader;
 use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
-use Phossa2\Config\Exception\InvalidArgumentException;
 use Phossa2\Config\Exception\LogicException;
+use Phossa2\Config\Exception\InvalidArgumentException;
 
 /**
  * ConfigFileLoader
@@ -88,7 +88,14 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
             $data = [];
             foreach ($this->globFiles($group, $environment) as $file) {
                 $grp = basename($file, '.' . $this->file_type);
-                $data[$grp][] = (array) Reader::readFile($file);
+                if (!isset($data[$grp])) {
+                    $data[$grp] = [];
+                }
+
+                $data[$grp] = array_replace_recursive(
+                    $data[$grp],
+                    (array) Reader::readFile($file)
+                );
             }
             return $data;
         } catch (\Exception $e) {

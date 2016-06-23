@@ -41,6 +41,11 @@ class Message extends BaseMessage
      */
     const CONFIG_FILE_TYPE_UNKNOWN = 1606221009;
 
+    /*
+     * Config reference "%s" unknown
+     */
+    const CONFIG_REFERENCE_UNKNOWN = 1606221010;
+
     /**
      * {@inheritDoc}
      */
@@ -48,5 +53,6 @@ class Message extends BaseMessage
         self::CONFIG_KEY_INVALID => 'Config key "%s" is not valid',
         self::CONFIG_ROOT_INVALID => 'Config root "%s" is not valid',
         self::CONFIG_FILE_TYPE_UNKNOWN => 'Config file type "%s" unknown',
+        self::CONFIG_REFERENCE_UNKNOWN => 'Config reference "%s" unknown',
     ];
 }
