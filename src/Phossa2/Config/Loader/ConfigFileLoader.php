@@ -68,7 +68,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      */
     public function __construct(
         /*# string */ $rootDir,
-        /*# string */ $environment,
+        /*# string */ $environment = '',
         /*# string */ $fileType = 'php'
     ) {
         return $this
@@ -104,49 +104,15 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     }
 
     /**
-     * Returns an array of files to read from
-     *
-     * @param  string $group
-     * @param  null|string $environment
-     * @return array
-     * @access protected
-     */
-    protected function globFiles(
-        /*# string */ $group,
-        $environment
-    )/*# : array */ {
-        $files = [];
-        foreach($this->buildSearchDirs($environment) as $dir) {
-            // append trailing '/'
-            $dir .= \DIRECTORY_SEPARATOR;
-
-            // group file
-            $file = $dir . $group . '.' . $this->file_type;
-
-            // all groups
-            if ('' === $group) {
-                $files = array_merge(
-                    $files, glob($dir . '*.' . $this->file_type)
-                );
-
-            // one group
-            } elseif (is_file($file)) {
-                $files[] = $file;
-            }
-        }
-
-        return $files;
-    }
-
-    /**
      * Set config file root directory
      *
      * @param  string $rootDir
      * @return $this
      * @throws InvalidArgumentException if dir is bad
-     * @access protected
+     * @access public
+     * @api
      */
-    protected function setRootDir(/*# string */ $rootDir)
+    public function setRootDir(/*# string */ $rootDir)
     {
         $this->root_dir = realpath($rootDir);
 
@@ -166,9 +132,10 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      * @param  string $fileType
      * @return $this
      * @throws InvalidArgumentException if unsupported file type
-     * @access protected
+     * @access public
+     * @api
      */
-    protected function setFileType(/*# string */ $fileType)
+    public function setFileType(/*# string */ $fileType)
     {
         $this->file_type = $fileType;
         return $this;
@@ -179,12 +146,48 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      *
      * @param  string $environment
      * @return $this
-     * @access protected
+     * @access public
+     * @api
      */
-    protected function setEnvironment(/*# string */ $environment)
+    public function setEnvironment(/*# string */ $environment)
     {
         $this->sub_dirs = $this->buildSearchDirs($environment);
         return $this;
+    }
+
+    /**
+     * Returns an array of files to read from
+     *
+     * @param  string $group
+     * @param  null|string $environment
+     * @return array
+     * @access protected
+     */
+    protected function globFiles(
+        /*# string */ $group,
+        $environment
+        )/*# : array */ {
+            $files = [];
+            foreach($this->buildSearchDirs($environment) as $dir) {
+                // append trailing '/'
+                $dir .= \DIRECTORY_SEPARATOR;
+
+                // group file
+                $file = $dir . $group . '.' . $this->file_type;
+
+                // all groups
+                if ('' === $group) {
+                    $files = array_merge(
+                        $files, glob($dir . '*.' . $this->file_type)
+                        );
+
+                    // one group
+                } elseif (is_file($file)) {
+                    $files[] = $file;
+                }
+            }
+
+            return $files;
     }
 
     /**
