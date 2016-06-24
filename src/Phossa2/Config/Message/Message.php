@@ -46,6 +46,16 @@ class Message extends BaseMessage
      */
     const CONFIG_REFERENCE_UNKNOWN = 1606221010;
 
+    /*
+     * Config group "%s" unknown
+     */
+    const CONFIG_GROUP_UNKNOWN = 1606221011;
+
+    /*
+     * Uknown super global "%s"
+     */
+    const CONFIG_GLOBAL_UNKNOWN = 1606221011;
+
     /**
      * {@inheritDoc}
      */
@@ -54,5 +64,7 @@ class Message extends BaseMessage
         self::CONFIG_ROOT_INVALID => 'Config root "%s" is not valid',
         self::CONFIG_FILE_TYPE_UNKNOWN => 'Config file type "%s" unknown',
         self::CONFIG_REFERENCE_UNKNOWN => 'Config reference "%s" unknown',
+        self::CONFIG_GROUP_UNKNOWN => 'Config group "%s" unknown',
+        self::CONFIG_GLOBAL_UNKNOWN => 'Uknown super global "%s"',
     ];
 }

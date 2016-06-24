@@ -16,9 +16,13 @@ namespace Phossa2\Config;
 
 use Phossa2\Shared\Tree\Tree;
 use Phossa2\Config\Message\Message;
+use Phossa2\Shared\Tree\TreeInterface;
+use Phossa2\Shared\Base\ObjectAbstract;
 use Phossa2\Shared\Reference\ReferenceTrait;
 use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Loader\ConfigLoaderInterface;
+use Phossa2\Shared\Reference\ReferenceInterface;
+
 
 /**
  * Config
@@ -28,9 +32,19 @@ use Phossa2\Config\Loader\ConfigLoaderInterface;
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Config implements ConfigInterface
+class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterface
 {
     use ReferenceTrait;
+
+    /**
+     * error type
+     *
+     * @var    int
+     */
+    protected $name = value;
+    const ERROR_IGNORE    = 0;
+    const ERROR_WARNING   = 1;
+    const ERROR_EXCEPTION = 2;
 
     /**
      * the config loader
@@ -43,28 +57,51 @@ class Config implements ConfigInterface
     /**
      * the config tree
      *
-     * @var    Tree
+     * @var    TreeInterface
      * @access protected
      */
-    protected $tree;
+    protected $config;
+
+    /**
+     * cache loaded group names
+     *
+     * @var    array
+     * @access protected
+     */
+    protected $loaded = [];
+
+    /**
+     * How to dealing with error, ignore/trigger_error/exception etc.
+     *
+     * @var    int
+     * @access protected
+     */
+    protected $error_type;
 
     /**
      * Constructor
      *
      * @param  ConfigLoaderInterface $loader
-     * @param  array $initData
+     * @param  TreeInterface $configTree
+     * @param  int $errorType
      * @access public
      * @api
      */
     public function __construct(
         ConfigLoaderInterface $loader,
-        array $initData = []
+        TreeInterface $configTree = null,
+        /*# int */ $errorType = self::ERROR_WARNING
     ) {
         // the config loader
         $this->loader = $loader;
 
         // the config tree
-        $this->tree = new Tree($initData);
+        if (null === $configTree) {
+            $this->config = new Tree();
+        }
+
+        // set error type
+        $this->error_type = $errorType;
     }
 
     /**
@@ -72,13 +109,23 @@ class Config implements ConfigInterface
      */
     public function get(/*# string */ $key, $default = null)
     {
-        // lazy load
-        $this->loadConfig($key);
+        try {
+            // lazy load
+            $this->loadConfig((string) $key);
 
-        //  get value
-        $val = $this->getReference($key);
+            //  get value
+            $val = $this->config->getNode($key);
 
-        return null === $val ? $default : $val;
+            // dereference
+            $this->deReferenceArray($val);
+
+            return null === $val ? $default : $val;
+
+        // if dereference exception catched
+        } catch (\Exception $e) {
+            $this->setError($e->getMessage(), $e->getCode());
+            return null;
+        }
     }
 
     /**
@@ -86,11 +133,14 @@ class Config implements ConfigInterface
      */
     public function set(/*# string */ $key, $value)
     {
-        // lazy load but not dereferenced
-        $this->loadConfig($key);
+        // clear reference cache
+        $this->clearReferenceCache();
+
+        // lazy load, no dereference
+        $this->loadConfig((string) $key);
 
         // replace the node
-        $this->tree->addNode($key, $value);
+        $this->config->addNode($key, $value);
 
         return $this;
     }
@@ -100,35 +150,45 @@ class Config implements ConfigInterface
      */
     public function has(/*# string */ $key)/*# : bool */
     {
-        return null !== $this->get((string) $key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function del(/*# string */ $key)
-    {
-        return $this->tree->deleteNode((string) $key);
+        try {
+            return null !== $this->get((string) $key);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
      * Load config
      *
-     * @param  string $name
+     * @param  string $key
      * @return $this
+     * @throws LogicException if current $error_type is to throw exception
      * @access protected
      */
-    protected function loadConfig(/*# string */ $name)
+    protected function loadConfig(/*# string */ $key)
     {
-        // get group name
-        $group = $this->getGroupName($name);
+        try {
+            // get group name
+            $group = $this->getGroupName($key);
 
-        // skip defined globals
-        if ('_' !== $group[0] || !isset($GLOBALS[$group])) {
-            $this->loadByGroup($group);
+            // check cache
+            if (isset($this->loaded[$group])) {
+                return $this;
+            }
+
+            // mark as loaded
+            $this->loaded[$group] = true;
+
+            // loading the group
+            return $this->loadByGroup($group);
+
+        } catch (\Exception $e) {
+            return $this->setError(
+                Message::get(Message::CONFIG_GROUP_UNKNOWN, $group) .
+                    $e->getMessage(),
+                Message::CONFIG_GROUP_UNKNOWN
+            );
         }
-
-        return $this;
     }
 
     /**
@@ -136,16 +196,46 @@ class Config implements ConfigInterface
      *
      * @param  string $group
      * @return $this
+     * @throws \Exception group loading issues
      * @access protected
      */
     protected function loadByGroup(/*# string */ $group)
     {
-        if (!$this->tree->hasNode($group)) {
-            $conf = $this->loader->load($group);
-            foreach ($conf as $grp => $data) {
-                $this->tree->addNode($grp, $data);
-            }
+        // if super global
+        if (substr($group, 0, 1) === '_') {
+            return $this->loadGlobal($group);
         }
+
+        // load from config file
+        $conf = $this->loader->load($group);
+
+        foreach ($conf as $grp => $data) {
+            $this->config->addNode($grp, $data);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Load super globals
+     *
+     * @param  string $group
+     * @return $this
+     * @throws LogicException if global unknown
+     * @access protected
+     */
+    protected function loadGlobal(/*# string */ $group)
+    {
+        if (!isset($GLOBALS[$group])) {
+            throw new LogicException(
+                Message::get(Message::CONFIG_GLOBAL_UNKNOWN, $group),
+                Message::CONFIG_GLOBAL_UNKNOWN
+            );
+        }
+
+        // load super global
+        $this->config->addNode($group, $GLOBALS[$group]);
+
         return $this;
     }
 
@@ -156,24 +246,25 @@ class Config implements ConfigInterface
      * @return string
      * @access protected
      */
-    protected function getGroupName(/*# string */ $name)/*# : string */
+    protected function getGroupName(/*# string */ $key)/*# : string */
     {
-        return explode('.', $name)[0];
+        // first field of the $key
+        return explode($this->config->getDelimiter(), $key)[0];
     }
 
     /**
-     * For unknown reference $name
+     * throw exception if current $error_type is to throw exception
      *
-     * @param  string $name
-     * @return mixed
-     * @access protected
+     * {@inheritDoc}
      */
     protected function resolveUnknown(/*# string */ $name)
     {
+        // try load & dereference etc.
         $val = $this->get($name);
 
+        // warn if reference unknown
         if (null === $val) {
-            throw new LogicException(
+            $this->setError(
                 Message::get(Message::CONFIG_REFERENCE_UNKNOWN, $name),
                 Message::CONFIG_REFERENCE_UNKNOWN
             );
@@ -183,45 +274,34 @@ class Config implements ConfigInterface
     }
 
     /**
-     * - check super globals if name like '_SERVER.HTTP_HOST'
-     * - search the parameter pool to find the right value
-     *
      * {@inheritDoc}
      */
     protected function getReference(/*# string */ $name)
     {
-        // get '${_SERVER.HTTP_HOST}' etc.
-        if ('_' === $name[0]) {
-            return $this->getSuperGlobal($name);
-
-        // get raw value of $name
-        } else {
-            return $this->tree->getNode($name);
-        }
+        return $this->config->getNode($name);
     }
 
     /**
-     * Get super global value
+     * Dealing errors
      *
-     * @param  string $name something like '_SERVER.HTTP_HOST'
-     * @return string|array
+     * @param  string $message
+     * @param  int $code
+     * @return $this
+     * @throws LogicException if current $error_type is to throw exception
      * @access protected
      */
-    protected function getSuperGlobal(/*# string */ $name)
+    protected function setError(/*# string */ $message, /*# int */ $code)
     {
-        $pos = strpos($name, '.');
-        if (false !== $pos) {
-            $pref = substr($name, 0, $pos);
-            $suff = substr($name, $pos + 1);
-            if (isset($GLOBALS[$pref][$suff])) {
-                return $GLOBALS[$pref][$suff];
-            }
-        } else {
-            $pref = $name;
-            if (isset($GLOBALS[$pref])) {
-                return $GLOBALS[$pref];
-            }
+        switch ($this->error_type) {
+            case self::ERROR_WARNING:
+                trigger_error($message, \E_USER_WARNING);
+                break;
+            case self::ERROR_EXCEPTION:
+                throw new LogicException($message, $code);
+                break;
+            default:
+                break;
         }
-        return null;
+        return $this;
     }
 }

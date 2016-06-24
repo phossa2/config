@@ -29,4 +29,6 @@ return [
     Message::CONFIG_ROOT_INVALID => '配置根目录 "%s" 错误',
     Message::CONFIG_FILE_TYPE_UNKNOWN => '未知的配置文件格式 "%s"',
     Message::CONFIG_REFERENCE_UNKNOWN => '未知替代变量 "%s"',
+    Message::CONFIG_GROUP_UNKNOWN => '未知配置群 "%s"',
+    Message::CONFIG_GLOBAL_UNKNOWN => '未知超级全局变量 "%s"',
 ];

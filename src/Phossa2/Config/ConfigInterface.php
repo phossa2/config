@@ -14,8 +14,7 @@
 
 namespace Phossa2\Config;
 
-use Phossa2\Config\Exception\InvalidArgumentException;
-
+use Phossa2\Config\Exception\LogicException;
 /**
  * ConfigInterface
  *
@@ -27,12 +26,12 @@ use Phossa2\Config\Exception\InvalidArgumentException;
 interface ConfigInterface
 {
     /**
-     * Get a configure value
+     * Get a configure value. returns NULL if not found
      *
      * @param  string $key configuration key
      * @param  mixed default value if any
      * @return mixed
-     * @throws InvalidArgumentException if $key not a string
+     * @throws LogicException if error type is to throw exception
      * @access public
      * @api
      */
@@ -44,7 +43,7 @@ interface ConfigInterface
      * @param  string $key configuration key
      * @param  mixed values
      * @return $this
-     * @throws InvalidArgumentException if $key not a string
+     * @throws LogicException if error type is to throw exception
      * @access public
      * @api
      */
@@ -55,20 +54,8 @@ interface ConfigInterface
      *
      * @param  string $key configuration key
      * @return bool
-     * @throws InvalidArgumentException if $key not a string
      * @access public
      * @api
      */
     public function has(/*# string */ $key)/*# : bool */;
-
-    /**
-     * Delete a configure by key
-     *
-     * @param  string $key configuration key
-     * @return $this
-     * @throws InvalidArgumentException if $key not a string
-     * @access public
-     * @api
-     */
-    public function del(/*# string */ $key);
 }
