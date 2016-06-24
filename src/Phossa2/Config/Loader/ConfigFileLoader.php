@@ -71,7 +71,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
         /*# string */ $environment = '',
         /*# string */ $fileType = 'php'
     ) {
-        return $this
+        $this
             ->setRootDir($rootDir)
             ->setFileType($fileType)
             ->setEnvironment($environment);
@@ -114,14 +114,15 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      */
     public function setRootDir(/*# string */ $rootDir)
     {
-        $this->root_dir = realpath($rootDir);
-
-        if (false === $this->root_dir) {
+        $dir = realpath($rootDir);
+        if (false === $dir) {
             throw new InvalidArgumentException(
                 Message::get(Message::CONFIG_ROOT_INVALID, $rootDir),
                 Message::CONFIG_ROOT_INVALID
             );
         }
+
+        $this->root_dir = $dir . \DIRECTORY_SEPARATOR;
 
         return $this;
     }
@@ -166,28 +167,25 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     protected function globFiles(
         /*# string */ $group,
         $environment
-        )/*# : array */ {
-            $files = [];
-            foreach($this->buildSearchDirs($environment) as $dir) {
-                // append trailing '/'
-                $dir .= \DIRECTORY_SEPARATOR;
+    )/*# : array */ {
+        $files = [];
+        foreach($this->buildSearchDirs($environment) as $dir) {
+            // group file
+            $file = $dir . $group . '.' . $this->file_type;
 
-                // group file
-                $file = $dir . $group . '.' . $this->file_type;
+            // all groups
+            if ('' === $group) {
+                $files = array_merge(
+                    $files, glob($dir . '*.' . $this->file_type)
+                );
 
-                // all groups
-                if ('' === $group) {
-                    $files = array_merge(
-                        $files, glob($dir . '*.' . $this->file_type)
-                        );
-
-                    // one group
-                } elseif (is_file($file)) {
-                    $files[] = $file;
-                }
+                // one group
+            } elseif (is_file($file)) {
+                $files[] = $file;
             }
+        }
 
-            return $files;
+        return $files;
     }
 
     /**
@@ -208,7 +206,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
                 \PREG_SPLIT_NO_EMPTY);
 
             foreach($subs as $dir) {
-                $path = $path . \DIRECTORY_SEPARATOR . $dir;
+                $path = $path . $dir . \DIRECTORY_SEPARATOR;
                 $subdirs[] = $path;
             }
 

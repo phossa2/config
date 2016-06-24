@@ -246,7 +246,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
     /**
      * Get group name
      *
-     * @param  string $name
+     * @param  string $key
      * @return string
      * @access protected
      */
@@ -302,7 +302,6 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
                 break;
             case self::ERROR_EXCEPTION:
                 throw new LogicException($message, $code);
-                break;
             default:
                 break;
         }

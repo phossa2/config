@@ -53,7 +53,8 @@ class ConfigFileLoaderTest extends \PHPUnit_Framework_TestCase
         $loader = $this->loader;
         $loader->setFileType('ini');
 
-        $this->assertEquals(__DIR__ . \DIRECTORY_SEPARATOR . 'conf',
+        $this->assertEquals(__DIR__ .
+            \DIRECTORY_SEPARATOR . 'conf' . \DIRECTORY_SEPARATOR,
             $this->getPrivateProperty('root_dir', $this->loader)
         );
 
