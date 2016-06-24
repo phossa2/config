@@ -23,7 +23,6 @@ use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Loader\ConfigLoaderInterface;
 use Phossa2\Shared\Reference\ReferenceInterface;
 
-
 /**
  * Config
  *
@@ -41,7 +40,6 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      *
      * @var    int
      */
-    protected $name = value;
     const ERROR_IGNORE    = 0;
     const ERROR_WARNING   = 1;
     const ERROR_EXCEPTION = 2;
@@ -124,7 +122,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
         // if dereference exception catched
         } catch (\Exception $e) {
             $this->setError($e->getMessage(), $e->getCode());
-            return null;
+            return $default;
         }
     }
 
@@ -150,11 +148,17 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      */
     public function has(/*# string */ $key)/*# : bool */
     {
-        try {
-            return null !== $this->get((string) $key);
-        } catch (\Exception $e) {
-            return false;
-        }
+        // update error type
+        $err = $this->error_type;
+        $this->error_type = self::ERROR_IGNORE;
+
+        // check $key
+        $result = null !== $this->get((string) $key);
+
+        // restore error type
+        $this->error_type = $err;
+
+        return $result;
     }
 
     /**
