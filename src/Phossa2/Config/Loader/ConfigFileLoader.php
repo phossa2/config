@@ -84,23 +84,22 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
         /*# string */ $group,
         $environment = null
     )/*# : array */ {
-        try {
-            $data = [];
-            foreach ($this->globFiles($group, $environment) as $file) {
-                $grp = basename($file, '.' . $this->file_type);
-                if (!isset($data[$grp])) {
-                    $data[$grp] = [];
-                }
-
+        $data = [];
+        foreach ($this->globFiles($group, $environment) as $file) {
+            $grp = basename($file, '.' . $this->file_type);
+            if (!isset($data[$grp])) {
+                $data[$grp] = [];
+            }
+            try {
                 $data[$grp] = array_replace_recursive(
                     $data[$grp],
                     (array) Reader::readFile($file)
                 );
+            } catch (\Exception $e) {
+                throw new LogicException($e->getMessage(), $e->getCode());
             }
-            return $data;
-        } catch (\Exception $e) {
-            throw new LogicException($e->getMessage(), $e->getCode());
         }
+        return $data;
     }
 
     /**
@@ -169,22 +168,11 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
         $environment
     )/*# : array */ {
         $files = [];
+        $group = '' === $group ? '*' : $group;
         foreach($this->buildSearchDirs($environment) as $dir) {
-            // group file
             $file = $dir . $group . '.' . $this->file_type;
-
-            // all groups
-            if ('' === $group) {
-                $files = array_merge(
-                    $files, glob($dir . '*.' . $this->file_type)
-                );
-
-                // one group
-            } elseif (is_file($file)) {
-                $files[] = $file;
-            }
+            $files = array_merge( $files, glob($file));
         }
-
         return $files;
     }
 

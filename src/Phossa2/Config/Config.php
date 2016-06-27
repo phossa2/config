@@ -171,15 +171,15 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      */
     protected function loadConfig(/*# string */ $key)
     {
+        // get group name
+        $group = $this->getGroupName($key);
+
+        // check cache
+        if (isset($this->loaded[$group])) {
+            return $this;
+        }
+
         try {
-            // get group name
-            $group = $this->getGroupName($key);
-
-            // check cache
-            if (isset($this->loaded[$group])) {
-                return $this;
-            }
-
             // mark as loaded
             $this->loaded[$group] = true;
 
