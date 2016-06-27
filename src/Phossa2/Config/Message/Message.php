@@ -54,7 +54,12 @@ class Message extends BaseMessage
     /*
      * Uknown super global "%s"
      */
-    const CONFIG_GLOBAL_UNKNOWN = 1606221011;
+    const CONFIG_GLOBAL_UNKNOWN = 1606221012;
+
+    /*
+     * Unknown environment "%s"
+     */
+    const CONFIG_ENV_UNKNOWN = 1606221013;
 
     /**
      * {@inheritDoc}
@@ -66,5 +71,6 @@ class Message extends BaseMessage
         self::CONFIG_REFERENCE_UNKNOWN => 'Config reference "%s" unknown',
         self::CONFIG_GROUP_UNKNOWN => 'Config group "%s" unknown',
         self::CONFIG_GLOBAL_UNKNOWN => 'Uknown super global "%s"',
+        self::CONFIG_ENV_UNKNOWN => 'Unknown environment "%s"',
     ];
 }

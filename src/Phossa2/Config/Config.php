@@ -85,15 +85,15 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      * Constructor
      *
      * @param  ConfigLoaderInterface $loader
-     * @param  TreeInterface $configTree
      * @param  int $errorType
+     * @param  TreeInterface $configTree
      * @access public
      * @api
      */
     public function __construct(
         ConfigLoaderInterface $loader,
-        TreeInterface $configTree = null,
-        /*# int */ $errorType = self::ERROR_WARNING
+        /*# int */ $errorType = self::ERROR_WARNING,
+        TreeInterface $configTree = null
     ) {
         // the config loader
         $this->loader = $loader;
@@ -170,7 +170,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
     public function set(/*# string */ $key, $value)
     {
         // clear reference cache
-        $this->clearReferenceCache();
+        $this->clearLocalCache();
 
         // lazy load, no dereference
         $this->loadConfig((string) $key);

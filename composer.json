@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "phossa2/shared": "^2.0.7"
+        "phossa2/shared": "dev-master"
     },
     "autoload": {
         "psr-0": { "Phossa2\\Config\\": "src/" }

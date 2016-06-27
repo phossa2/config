@@ -127,10 +127,36 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Exception test
+     *
+     * @covers Phossa2\Config\Reference\Config::get()
+     * @expectedException Phossa2\Config\Exception\LogicException
+     * @expectedExceptionCode Phossa2\Config\Message\Message::CONFIG_REFERENCE_UNKNOWN
+     */
+    public function testGet4()
+    {
+        $this->object = new Config(
+            new ConfigFileLoader(__DIR__.'/testData', 'production/host1'),
+            Config::ERROR_EXCEPTION
+        );
+
+        // resolve to unknown reference
+        $this->assertEquals(
+            '${dbx.unknown}',
+            $this->object->get('db.unknown')
+        );
+    }
+
+    /**
      * @covers Phossa2\Config\Reference\Config::set()
      */
     public function testSet()
     {
+        $this->assertFalse($this->object->has('bingo.wow'));
+
+        $this->object->set('bingo.wow', 1);
+
+        $this->assertTrue($this->object->has('bingo.wow'));
     }
 
     /**
@@ -138,5 +164,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testHas()
     {
+        // has
+        $this->assertTrue($this->object->has('db.auth.port'));
+
+        // no
+        $this->assertFalse($this->object->has('bingo.wow'));
     }
 }

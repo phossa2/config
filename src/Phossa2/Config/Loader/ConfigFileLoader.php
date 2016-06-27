@@ -137,6 +137,13 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      */
     public function setFileType(/*# string */ $fileType)
     {
+        if (!Reader::isSupported($fileType)) {
+            throw new InvalidArgumentException(
+                Message::get(Message::CONFIG_FILE_TYPE_UNKNOWN, $fileType),
+                Message::CONFIG_FILE_TYPE_UNKNOWN
+            );
+        }
+
         $this->file_type = $fileType;
         return $this;
     }
@@ -146,6 +153,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      *
      * @param  string $environment
      * @return $this
+     * @throws InvalidArgumentException if environment unknown
      * @access public
      * @api
      */
@@ -161,6 +169,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      * @param  string $group
      * @param  null|string $environment
      * @return array
+     * @throws InvalidArgumentException if environment unknown
      * @access protected
      */
     protected function globFiles(
@@ -171,7 +180,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
         $group = '' === $group ? '*' : $group;
         foreach($this->buildSearchDirs($environment) as $dir) {
             $file = $dir . $group . '.' . $this->file_type;
-            $files = array_merge( $files, glob($file));
+            $files = array_merge($files, glob($file));
         }
         return $files;
     }
@@ -181,6 +190,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      *
      * @param  null|string $environment
      * @return array
+     * @throws InvalidArgumentException if environment unknown
      * @access protected
      */
     protected function buildSearchDirs($environment)/*# : array */
@@ -194,7 +204,13 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
                 \PREG_SPLIT_NO_EMPTY);
 
             foreach($subs as $dir) {
-                $path = $path . $dir . \DIRECTORY_SEPARATOR;
+                $path .= $dir . \DIRECTORY_SEPARATOR;
+                if (false === file_exists($path)) {
+                    throw new InvalidArgumentException(
+                        Message::get(Message::CONFIG_ENV_UNKNOWN, $environment),
+                        Message::CONFIG_ENV_UNKNOWN
+                    );
+                }
                 $subdirs[] = $path;
             }
 
