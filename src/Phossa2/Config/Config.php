@@ -22,18 +22,23 @@ use Phossa2\Shared\Reference\ReferenceTrait;
 use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Loader\ConfigLoaderInterface;
 use Phossa2\Shared\Reference\ReferenceInterface;
+use Phossa2\Shared\Reference\DelegatorAwareTrait;
+use Phossa2\Shared\Reference\DelegatorAwareInterface;
 
 /**
  * Config
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
+ * @see     ObjectAbstract
+ * @see     ConfigInterface
+ * @see     ReferenceInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterface
+class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterface, DelegatorAwareInterface
 {
-    use ReferenceTrait;
+    use ReferenceTrait, DelegatorAwareTrait;
 
     /**
      * error type
@@ -129,6 +134,39 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
     /**
      * {@inheritDoc}
      */
+    public function has(/*# string */ $key)/*# : bool */
+    {
+        try {
+            // update error type
+            $err = $this->error_type;
+            $this->error_type = self::ERROR_IGNORE;
+
+            // lazy load
+            $this->loadConfig((string) $key);
+
+            //  get value
+            $result = null !== $this->config->getNode((string) $key);
+
+            // restore error type
+            $this->error_type = $err;
+
+            return $result;
+
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Set configuration
+     *
+     * @param  string $key configuration key
+     * @param  mixed values
+     * @return $this
+     * @throws LogicException if error type is to throw exception
+     * @access public
+     * @api
+     */
     public function set(/*# string */ $key, $value)
     {
         // clear reference cache
@@ -144,24 +182,6 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function has(/*# string */ $key)/*# : bool */
-    {
-        // update error type
-        $err = $this->error_type;
-        $this->error_type = self::ERROR_IGNORE;
-
-        // check $key
-        $result = null !== $this->get((string) $key);
-
-        // restore error type
-        $this->error_type = $err;
-
-        return $result;
-    }
-
-    /**
      * Load config
      *
      * @param  string $key
@@ -174,25 +194,16 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
         // get group name
         $group = $this->getGroupName($key);
 
-        // check cache
+        // $group loaded ?
         if (isset($this->loaded[$group])) {
             return $this;
         }
 
-        try {
-            // mark as loaded
-            $this->loaded[$group] = true;
+        // mark as loaded
+        $this->loaded[$group] = true;
 
-            // loading the group
-            return $this->loadByGroup($group);
-
-        } catch (\Exception $e) {
-            return $this->setError(
-                Message::get(Message::CONFIG_GROUP_UNKNOWN, $group) .
-                    $e->getMessage(),
-                Message::CONFIG_GROUP_UNKNOWN
-            );
-        }
+        // loading the group
+        return $this->loadByGroup($group);
     }
 
     /**
@@ -263,18 +274,13 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      */
     protected function resolveUnknown(/*# string */ $name)
     {
-        // try load & dereference etc.
-        $val = $this->get($name);
-
         // warn if reference unknown
-        if (null === $val) {
-            $this->setError(
-                Message::get(Message::CONFIG_REFERENCE_UNKNOWN, $name),
-                Message::CONFIG_REFERENCE_UNKNOWN
-            );
-        }
+        $this->setError(
+            Message::get(Message::CONFIG_REFERENCE_UNKNOWN, $name),
+            Message::CONFIG_REFERENCE_UNKNOWN
+        );
 
-        return $val;
+        return null;
     }
 
     /**
@@ -282,7 +288,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      */
     protected function getReference(/*# string */ $name)
     {
-        return $this->config->getNode($name);
+        return $this->get($name);
     }
 
     /**

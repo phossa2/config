@@ -15,6 +15,7 @@
 namespace Phossa2\Config;
 
 use Phossa2\Config\Exception\LogicException;
+
 /**
  * ConfigInterface
  *
@@ -29,25 +30,13 @@ interface ConfigInterface
      * Get a configure value. returns NULL if not found
      *
      * @param  string $key configuration key
-     * @param  mixed default value if any
+     * @param  mixed default value if not found
      * @return mixed
      * @throws LogicException if error type is to throw exception
      * @access public
      * @api
      */
     public function get(/*# string */ $key, $default = null);
-
-    /**
-     * Set configuration
-     *
-     * @param  string $key configuration key
-     * @param  mixed values
-     * @return $this
-     * @throws LogicException if error type is to throw exception
-     * @access public
-     * @api
-     */
-    public function set(/*# string */ $key, $value);
 
     /**
      * Has a configure by key ?

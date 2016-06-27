@@ -1,0 +1,85 @@
+<?php
+/**
+ * Phossa Project
+ *
+ * PHP version 5.4
+ *
+ * @category  Library
+ * @package   Phossa2\Config
+ * @copyright Copyright (c) 2016 phossa.com
+ * @license   http://mit-license.org/ MIT License
+ * @link      http://www.phossa.com/
+ */
+/*# declare(strict_types=1); */
+
+namespace Phossa2\Config;
+
+use Phossa2\Shared\Base\ObjectAbstract;
+use Phossa2\Shared\Reference\DelegatorTrait;
+use Phossa2\Shared\Reference\DelegatorInterface;
+
+/**
+ * Delegator
+ *
+ * Implmentation of DelegatorInterface
+ *
+ * @package Phossa2\Config
+ * @author  Hong Zhang <phossa@126.com>
+ * @see     ObjectAbstract
+ * @see     DelegatorInterface
+ * @version 2.0.0
+ * @since   2.0.0 added
+ */
+class Delegator extends ObjectAbstract implements DelegatorInterface, ConfigInterface
+{
+    use DelegatorTrait;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function get(/*# string */ $key, $default = null)
+    {
+        if ($this->hasInLookup($key)) {
+            return $this->getFromLookup($key);
+        }
+        return $default;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function has(/*# string */ $key)/*# : bool */
+    {
+        return $this->hasInLookup($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function isValidContainer($container)/*# : bool */
+    {
+        return $container instanceof ConfigInterface;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function hasInContainer(
+        $container,
+        /*# string */ $key
+    )/*# : bool */ {
+        /* @var $container ConfigInterface */
+        return $container->has($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getFromContainer(
+        $container,
+        /*# string */ $key
+    ) {
+        /* @var $container ConfigInterface */
+        return $container->get($key);
+    }
+}
