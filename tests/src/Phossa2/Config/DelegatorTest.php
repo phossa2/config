@@ -123,7 +123,7 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
         // overwrite
         $delegator['db.user'] = 'test';
         $this->assertEquals('test', $delegator['db.user']);
-        $this->assertEquals('test', $config1['db.user']);
+        $this->assertEquals('root', $config1['db.user']);
 
         // new key added
         $delegator['db.new'] = 'new';
