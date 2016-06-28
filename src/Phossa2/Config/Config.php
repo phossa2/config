@@ -24,6 +24,7 @@ use Phossa2\Config\Loader\ConfigLoaderInterface;
 use Phossa2\Shared\Reference\ReferenceInterface;
 use Phossa2\Shared\Reference\DelegatorAwareTrait;
 use Phossa2\Shared\Reference\DelegatorAwareInterface;
+use Phossa2\Config\Loader\DummyLoader;
 
 /**
  * Config
@@ -92,10 +93,10 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Re
      * @api
      */
     public function __construct(
-        ConfigLoaderInterface $loader,
+        ConfigLoaderInterface $loader = null,
         TreeInterface $configTree = null
     ) {
-        $this->loader = $loader;
+        $this->loader = $loader ?: new DummyLoader();
         $this->config = $configTree ?: new Tree();
     }
 

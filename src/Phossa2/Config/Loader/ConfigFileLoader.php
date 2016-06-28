@@ -188,7 +188,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     )/*# : array */ {
         $files = [];
         $group = '' === $group ? '*' : $group;
-        foreach($this->getSearchDirs($environment) as $dir) {
+        foreach ($this->getSearchDirs($environment) as $dir) {
             $file  = $dir . $group . '.' . $this->file_type;
             $files = array_merge($files, glob($file));
         }
@@ -229,7 +229,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
         );
 
         $subdirs = [$path];
-        foreach($subs as $dir) {
+        foreach ($subs as $dir) {
             $path .= $dir . \DIRECTORY_SEPARATOR;
             if (false === file_exists($path)) {
                 throw new InvalidArgumentException(

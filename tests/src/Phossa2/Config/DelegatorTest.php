@@ -2,7 +2,6 @@
 
 namespace Phossa2\Config;
 
-use Phossa2\Config\Loader\DummyLoader;
 use Phossa2\Config\Loader\ConfigFileLoader;
 
 /**
@@ -96,8 +95,8 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet3()
     {
-        $config1 = new Config(new DummyLoader());
-        $config2 = new Config(new DummyLoader());
+        $config1 = new Config();
+        $config2 = new Config();
         $config1->setErrorType(Config::ERROR_IGNORE);
         $config2->setErrorType(Config::ERROR_IGNORE);
 
@@ -129,6 +128,5 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
         // new key added
         $delegator['db.new'] = 'new';
         $this->assertEquals('new', $delegator['db.new']);
-        $this->assertEquals('new', $config1['db.new']);
     }
 }

@@ -151,7 +151,7 @@ Usage
   // system.php
   return [
       'tmpdir' => '/usr/local/tmp',
-      ...
+      // ...
   ];
   ```
 
@@ -230,7 +230,7 @@ Usage
   [Interop Container Delegate Lookup](https://github.com/container-interop/fig-standards/blob/master/proposed/container.md)
 
   - Calls to the `get()` method should only return an entry if the entry is
-    part of the config registry. If the entry is not part of the registry, an
+    part of the config registry. If the entry is not part of the registry, a
     `NULL` will be returned as described in `ConfigInterface`.
 
   - Calls to the `has()` method should only return true if the entry is part
@@ -247,10 +247,9 @@ Usage
    ```php
    use Phossa2\Config\Config;
    use Phossa2\Config\Delegator;
-   use Phossa2\Config\Loader\DummyLoader;
 
-   $config1 = new Config(new DummyLoader());
-   $config2 = new Config(new DummyLoader());
+   $config1 = new Config();
+   $config2 = new Config();
    $delegator = new Delegator();
 
    $config1['db.user'] = '${system.user}';
@@ -289,7 +288,10 @@ Usage
   }
   ```
 
-- <a name="api"></a>Config API
+APIs
+---
+
+- <a name="api"></a>ConfigInterface API
 
   - `get($key, $default = null)`
 
@@ -309,7 +311,7 @@ Usage
 
     `$value` can be a `string` or `array`.
 
-- <a name="api"></a>Other public methods
+- <a name="other"></a>Other public methods
 
   - Reference related, `setReferencePattern()`, `hasReference()` and
     `deReference()`, `deReferenceArray()`.
@@ -319,7 +321,7 @@ Dependencies
 
 - PHP >= 5.4.0
 
-- phossa2/shared >= 2.0.1
+- phossa2/shared >= 2.0.9
 
 License
 ---
