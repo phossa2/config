@@ -69,26 +69,9 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
      */
     public function set(/*# string */ $key, $value)
     {
-        $regs = [];
-
-        // find all registry which has $key
-        foreach ($this->lookup_pool as $reg) {
-            /* @var $reg ConfigInterface */
-            if ($reg->has($key)) {
-                $regs[] = $reg;
-            }
-        }
-
-        // at least the dummy one
-        if (empty($regs)) {
-            $regs[] = $this->lookup_pool[0];
-        }
-
-        // set
-        foreach ($regs as $reg) {
-            $reg->set($key, $value);
-        }
-
+        // set with the dummy registry
+        $reg = $this->lookup_pool[0];
+        $reg->set($key, $value);
         return $this;
     }
 
