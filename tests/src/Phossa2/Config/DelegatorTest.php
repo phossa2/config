@@ -2,6 +2,7 @@
 
 namespace Phossa2\Config;
 
+use Phossa2\Config\Loader\DummyLoader;
 use Phossa2\Config\Loader\ConfigFileLoader;
 
 /**
@@ -86,5 +87,48 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
             'dbx',
             $this->delegator->get('db.unknown')
         );
+    }
+
+    /**
+     * Unkown reference resolved
+     *
+     * @covers Phossa2\Config\Reference\Delegator::get()
+     */
+    public function testGet3()
+    {
+        $config1 = new Config(new DummyLoader());
+        $config2 = new Config(new DummyLoader());
+        $config1->setErrorType(Config::ERROR_IGNORE);
+        $config2->setErrorType(Config::ERROR_IGNORE);
+
+        $delegator = new Delegator();
+
+        $config1['db.user'] = '${system.user}';
+        $config2['system.user'] = 'root';
+
+        // reference unresolved, return TRUE
+        $this->assertEquals('${system.user}', $config1['db.user']);
+
+        $config1->setDelegator($delegator);
+        $config2->setDelegator($delegator);
+
+        // reference resolved, return TRUE
+        $this->assertEquals('root', $config1['db.user']);
+
+        // delegator
+        $this->assertEquals('root', $delegator['db.user']);
+
+        // not in config2
+        $this->assertEquals(null, $config2['db.user']);
+
+        // overwrite
+        $delegator['db.user'] = 'test';
+        $this->assertEquals('test', $delegator['db.user']);
+        $this->assertEquals('test', $config1['db.user']);
+
+        // new key added
+        $delegator['db.new'] = 'new';
+        $this->assertEquals('new', $delegator['db.new']);
+        $this->assertEquals('new', $config1['db.new']);
     }
 }

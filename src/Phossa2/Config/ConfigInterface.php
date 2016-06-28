@@ -47,4 +47,16 @@ interface ConfigInterface
      * @api
      */
     public function has(/*# string */ $key)/*# : bool */;
+
+    /**
+     * Set configuration
+     *
+     * @param  string $key configuration key
+     * @param  mixed values
+     * @return $this
+     * @throws LogicException if error type is to throw exception
+     * @access public
+     * @api
+     */
+    public function set(/*# string */ $key, $value);
 }

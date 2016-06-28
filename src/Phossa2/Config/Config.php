@@ -31,15 +31,16 @@ use Phossa2\Shared\Reference\DelegatorAwareInterface;
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
  * @see     ObjectAbstract
+ * @see     \ArrayAccess
  * @see     ConfigInterface
  * @see     ReferenceInterface
  * @see     DelegatorAwareInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterface, DelegatorAwareInterface
+class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, ReferenceInterface, DelegatorAwareInterface
 {
-    use ReferenceTrait, DelegatorAwareTrait;
+    use ReferenceTrait, DelegatorAwareTrait, ArrayAccessTrait;
 
     /**
      * error type
@@ -149,14 +150,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
     }
 
     /**
-     * Set configuration
-     *
-     * @param  string $key configuration key
-     * @param  mixed values
-     * @return $this
-     * @throws LogicException if error type is to throw exception
-     * @access public
-     * @api
+     * {@inheritDoc}
      */
     public function set(/*# string */ $key, $value)
     {

@@ -6,8 +6,9 @@
 [![License](https://poser.pugx.org/phossa2/config/license)](http://mit-license.org/)
 
 **phossa2/config** is a configuration management library for PHP. The design
-idea is inspired by another github project `mrjgreen/config` but with lots of
-cool features.
+idea is inspired by another github project
+[mrjgreen/config](https://github.com/ecfectus/config) but with some cool
+features.
 
 It requires PHP 5.4, supports PHP 7.0+ and HHVM. It is compliant with
 [PSR-1][PSR-1], [PSR-2][PSR-2], [PSR-4][PSR-4].
@@ -63,14 +64,13 @@ Features
 - Use an [environment](#env) value, e.g. `production` or `production/host1`
   for switching between different configurations.
 
-- Support `.php`, `.json`, `.ini` and `.xml` type of configuration files.
+- Support `.php`, `.json`, `.ini`, `.xml` and `.serialized` type of config
+  files.
 
 - Use of [reference](#ref) in configuration value is supported, such as
   using `${system.tmpdir}` in configure file.
 
 - On demand configuration loading (lazy loading).
-
-- Able to load all configuration files in one shot with `$config->getAll()`
 
 - Hierachy configuration structure with dot notation like `db.auth.host`.
 
@@ -99,6 +99,15 @@ Features
   ];
   ```
 
+- [Array access](#array) to the configuration value
+
+  ```php
+  // $config is type of Phossa2\Config\Config
+  $config['db.auth.user'] = 'www';
+  ```
+
+- [Reference lookup delegation and config chaining](#delegate)
+
 Usage
 ---
 
@@ -111,23 +120,32 @@ Usage
   In the `bootstrap.php` file,
 
   ```php
-  // load environment
-  (new Phossa2\Env\Environment())->load(__DIR__ . '/.env');
+  use Phossa2\Config\Config;
+  use Phossa2\Env\Environment;
+  use Phossa2\Config\Loader\ConfigFileLoader;
 
-  // create config object
-  $config = new Phossa2\Config\Config(
-      getenv('CONFIG_DIR'), // loaded from .env file
-      getenv('APP_ENV')     // loaded from .env file
+  // load environment for .env
+  (new Environment())->load(__DIR__ . '/.env');
+
+  // create config object with the config file loader
+  $config = new Config(
+      new ConfigFileLoader(
+          getenv('CONFIG_DIR'), // loaded from .env file
+          getenv('APP_ENV')     // loaded from .env file
+      )
   );
 
-  // load all configs in one shot
-  $conf_data = $config->get(null);
+  // object access
+  $db_config = $config->get('db');
+
+  // array access
+  var_dump($config['db.user']);
   ```
 
 - <a name="group"></a>Grouping
 
-  Configurations are grouped into groups or files. For example, the `system.php`
-  holds all `system.*` configurations
+  Configurations are grouped into files. For example, the `system.php` holds
+  all `system.*` configurations
 
   ```php
   // system.php
@@ -140,6 +158,7 @@ Usage
   Later, system related configs can be retrieved as
 
   ```php
+  // object acess
   $dir = $config->get('system.tmpdir');
   ```
 
@@ -179,26 +198,96 @@ Usage
   You may reset the reference start and ending chars,
 
   ```php
-  // now reference is something like '%system.tmpdir%'
-  $config = (new Config())->setReferencePattern('%', '%');
-  ```
-
-  Or even disable the reference feature,
-
-  ```php
-  // now reference is not recognised
-  $config = (new Config())->setReferencePattern('', '');
+  // now reference is something like '%{system.tmpdir}%'
+  $config->setReferencePattern('%{', '}%');
   ```
 
 - <a name="overwrite"></a>Overwriting
 
-  If the environment is set to `production/host1`, the precedence order is,
+  If the environment is set to `production/host1`, the config file loading
+  order is,
 
-  - `config/production/host1/db.php` over
+  - `config/config/*.php`
 
-  - `config/production/db.php` over
+  - `config/production/*.php`
 
-  - `config/config/db.php`
+  - `config/production/host1/*.php`
+
+- <a name="array"></a>ArrayAccess
+
+  `Config` class implements `ArrayAccess` interface. So config values can
+  be accessed just like an array.
+
+  ```php
+  if (!isset($config['db.auth.user'])) {
+      $config['db.auth.user'] = 'www';
+  }
+  ```
+
+- <a name="delegate"></a>Reference lookup delegation and config chaining
+
+  Reference lookup delegation is similar to the delegation idea of
+  [Interop Container Delegate Lookup](https://github.com/container-interop/fig-standards/blob/master/proposed/container.md)
+
+  - Calls to the `get()` method should only return an entry if the entry is
+    part of the config registry. If the entry is not part of the registry, an
+    `NULL` will be returned as described in `ConfigInterface`.
+
+  - Calls to the `has()` method should only return true if the entry is part
+    of the config registry. If the entry is not part of the registry, false
+    should be returned.
+
+  - If the fetched entry has dependencies (references), **instead** of
+    performing the reference lookup in this config registry, the lookup is
+    performed on the delegator.
+
+  - **Important** By default, the lookup *SHOULD* be performed on the delegator
+    only, not on the config registry itself.
+
+   ```php
+   use Phossa2\Config\Config;
+   use Phossa2\Config\Delegator;
+   use Phossa2\Config\Loader\DummyLoader;
+
+   $config1 = new Config(new DummyLoader());
+   $config2 = new Config(new DummyLoader());
+   $delegator = new Delegator();
+
+   $config1['db.user'] = '${system.user}';
+   $config2['system.user'] = 'root';
+
+   // reference unresolved, return TRUE
+   var_dump($config1['db.user'] === '${system.user}');
+
+   $config1->setDelegator($delegator);
+   $config2->setDelegator($delegator);
+
+   // reference resolved, return TRUE
+   var_dump($config1['db.user'] === 'root');
+   ```
+
+  `Delegator` class also implements the `ConfigInterface` and `ArrayAccess`
+  interfaces, thus can be used as a front end for a config chain.
+
+  ```php
+  $dbUser = $delegator['db.user'];
+  ```
+
+  Multiple configs can register with the delegator,
+
+  ```php
+  $config3 = (new Config(
+      new ConfigFileLoader(
+          getenv('CONFIG_DIR'), // loaded from .env file
+          getenv('APP_ENV')     // loaded from .env file
+      )
+  ))->setDelegator($delegator);
+
+  // not delegator contains $config1, $config2 and $config3
+  if ($delegator->has('redis.port')) {
+    ...
+  }
+  ```
 
 - <a name="api"></a>Config API
 
@@ -222,11 +311,8 @@ Usage
 
 - <a name="api"></a>Other public methods
 
-  - `getAll()`
-
-    Get all the configurations (with references resolved) in array
-
-  - `setReferencePattern()`, `hasReference()` and `deReference()`
+  - Reference related, `setReferencePattern()`, `hasReference()` and
+    `deReference()`, `deReferenceArray()`.
 
 Dependencies
 ---

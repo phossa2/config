@@ -170,4 +170,29 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         // no
         $this->assertFalse($this->object->has('bingo.wow'));
     }
+
+    /**
+     * Test array access
+     *
+     * @covers Phossa2\Config\Reference\Config::offsetExists()
+     * @covers Phossa2\Config\Reference\Config::offsetGet()
+     * @covers Phossa2\Config\Reference\Config::offsetSet()
+     * @covers Phossa2\Config\Reference\Config::offsetUnset()
+     */
+    public function testArrayAccess()
+    {
+        // offsetExists
+        $this->assertTrue(isset($this->object['db.auth.port']));
+
+        // offsetGet
+        $this->assertTrue(3306 === $this->object['db.auth.port']);
+
+        // offsetSet
+        $this->object['db.auth.port'] = 3307;
+        $this->assertTrue(3307 === $this->object['db.auth.port']);
+
+        // offsetUnset
+        unset($this->object['db.auth.port']);
+        $this->assertFalse(isset($this->object['db.auth.port']));
+    }
 }

@@ -32,4 +32,5 @@ return [
     Message::CONFIG_GROUP_UNKNOWN => '未知配置群 "%s"',
     Message::CONFIG_GLOBAL_UNKNOWN => '未知超级全局变量 "%s"',
     Message::CONFIG_ENV_UNKNOWN => '未知环境目录 "%s"',
+    Message::CONFIG_NOT_IN_DELEGATOR => '委托里没有找到配置目标',
 ];

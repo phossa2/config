@@ -14,8 +14,10 @@
 
 namespace Phossa2\Config;
 
+use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
 use Phossa2\Shared\Reference\DelegatorTrait;
+use Phossa2\Config\Exception\LogicException;
 use Phossa2\Shared\Reference\DelegatorInterface;
 
 /**
@@ -30,9 +32,9 @@ use Phossa2\Shared\Reference\DelegatorInterface;
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Delegator extends ObjectAbstract implements DelegatorInterface, ConfigInterface
+class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterface, ConfigInterface
 {
-    use DelegatorTrait;
+    use ArrayAccessTrait, DelegatorTrait;
 
     /**
      * {@inheritDoc}
@@ -51,6 +53,42 @@ class Delegator extends ObjectAbstract implements DelegatorInterface, ConfigInte
     public function has(/*# string */ $key)/*# : bool */
     {
         return $this->hasInLookup($key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function set(/*# string */ $key, $value)
+    {
+        // marker
+        $set = false;
+
+        // set in all registry which has this $key
+        foreach ($this->lookup_pool as $reg) {
+            /* @var $reg ConfigInterface */
+            if ($reg->has($key)) {
+                $set = true;
+                $reg->set($key, $value);
+            }
+        }
+
+        // still not set, set in the first reg then
+        if (false === $set && isset($this->lookup_pool[0])) {
+            /* @var $reg ConfigInterface */
+            $reg = $this->lookup_pool[0];
+            $reg->set($key, $value);
+            $set = true;
+        }
+
+        // no registry found
+        if (false === $set) {
+            throw LogicException(
+                Message::get(Message::CONFIG_NOT_IN_DELEGATOR),
+                Message::CONFIG_NOT_IN_DELEGATOR
+            );
+        }
+
+        return $this;
     }
 
     /**
