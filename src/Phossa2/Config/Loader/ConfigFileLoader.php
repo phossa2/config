@@ -57,6 +57,14 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     protected $sub_dirs = [];
 
     /**
+     * subdirs to search
+     *
+     * @var    string
+     * @access protected
+     */
+    protected $environment;
+
+    /**
      * Constructor
      *
      * @param  string $rootDir
@@ -114,6 +122,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     public function setRootDir(/*# string */ $rootDir)
     {
         $dir = realpath($rootDir);
+
         if (false === $dir) {
             throw new InvalidArgumentException(
                 Message::get(Message::CONFIG_ROOT_INVALID, $rootDir),
@@ -159,7 +168,8 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      */
     public function setEnvironment(/*# string */ $environment)
     {
-        $this->sub_dirs = $this->buildSearchDirs($environment);
+        $this->environment = $environment;
+        $this->getSearchDirs($environment);
         return $this;
     }
 
@@ -178,11 +188,29 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     )/*# : array */ {
         $files = [];
         $group = '' === $group ? '*' : $group;
-        foreach($this->buildSearchDirs($environment) as $dir) {
-            $file = $dir . $group . '.' . $this->file_type;
+        foreach($this->getSearchDirs($environment) as $dir) {
+            $file  = $dir . $group . '.' . $this->file_type;
             $files = array_merge($files, glob($file));
         }
         return $files;
+    }
+
+    /**
+     * Get the search directories
+     *
+     * @param  string|null $environment
+     * @return array
+     * @access protected
+     */
+    protected function getSearchDirs($environment)/*# : array */
+    {
+        // use default is NULL supplied
+        $env = $environment ?: $this->environment;
+
+        if (!isset($this->sub_dirs[$env])) {
+            $this->sub_dirs[$env] = $this->buildSearchDirs($env);
+        }
+        return $this->sub_dirs[$env];
     }
 
     /**
@@ -193,28 +221,25 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      * @throws InvalidArgumentException if environment unknown
      * @access protected
      */
-    protected function buildSearchDirs($environment)/*# : array */
+    protected function buildSearchDirs(/*# string */ $environment)/*# : array */
     {
-        if (null === $environment) {
-            return $this->sub_dirs;
-        } else {
-            $path = $this->root_dir;
-            $subdirs = [$path];
-            $subs = preg_split('/[\/\\\]/', trim($environment, '/\\'), 0,
-                \PREG_SPLIT_NO_EMPTY);
+        $path = $this->root_dir;
+        $subs = preg_split(
+            '/[\/\\\]/', trim($environment, '/\\'), 0, \PREG_SPLIT_NO_EMPTY
+        );
 
-            foreach($subs as $dir) {
-                $path .= $dir . \DIRECTORY_SEPARATOR;
-                if (false === file_exists($path)) {
-                    throw new InvalidArgumentException(
-                        Message::get(Message::CONFIG_ENV_UNKNOWN, $environment),
-                        Message::CONFIG_ENV_UNKNOWN
-                    );
-                }
-                $subdirs[] = $path;
+        $subdirs = [$path];
+        foreach($subs as $dir) {
+            $path .= $dir . \DIRECTORY_SEPARATOR;
+            if (false === file_exists($path)) {
+                throw new InvalidArgumentException(
+                    Message::get(Message::CONFIG_ENV_UNKNOWN, $environment),
+                    Message::CONFIG_ENV_UNKNOWN
+                );
             }
-
-            return $subdirs;
+            $subdirs[] = $path;
         }
+
+        return $subdirs;
     }
 }

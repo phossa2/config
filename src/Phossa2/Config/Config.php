@@ -33,6 +33,7 @@ use Phossa2\Shared\Reference\DelegatorAwareInterface;
  * @see     ObjectAbstract
  * @see     ConfigInterface
  * @see     ReferenceInterface
+ * @see     DelegatorAwareInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
@@ -79,32 +80,22 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      * @var    int
      * @access protected
      */
-    protected $error_type;
+    protected $error_type = self::ERROR_WARNING;
 
     /**
      * Constructor
      *
      * @param  ConfigLoaderInterface $loader
-     * @param  int $errorType
      * @param  TreeInterface $configTree
      * @access public
      * @api
      */
     public function __construct(
         ConfigLoaderInterface $loader,
-        /*# int */ $errorType = self::ERROR_WARNING,
         TreeInterface $configTree = null
     ) {
-        // the config loader
         $this->loader = $loader;
-
-        // the config tree
-        if (null === $configTree) {
-            $this->config = new Tree();
-        }
-
-        // set error type
-        $this->error_type = $errorType;
+        $this->config = $configTree ?: new Tree();
     }
 
     /**
@@ -117,7 +108,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
             $this->loadConfig((string) $key);
 
             //  get value
-            $val = $this->config->getNode($key);
+            $val = $this->config->getNode((string) $key);
 
             // dereference
             $this->deReferenceArray($val);
@@ -126,7 +117,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
 
         // if dereference exception catched
         } catch (\Exception $e) {
-            $this->setError($e->getMessage(), $e->getCode());
+            $this->throwError($e->getMessage(), $e->getCode());
             return $default;
         }
     }
@@ -139,7 +130,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
         try {
             // update error type
             $err = $this->error_type;
-            $this->error_type = self::ERROR_IGNORE;
+            $this->setErrorType(self::ERROR_IGNORE);
 
             // lazy load
             $this->loadConfig((string) $key);
@@ -148,7 +139,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
             $result = null !== $this->config->getNode((string) $key);
 
             // restore error type
-            $this->error_type = $err;
+            $this->setErrorType($err);
 
             return $result;
 
@@ -178,6 +169,20 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
         // replace the node
         $this->config->addNode($key, $value);
 
+        return $this;
+    }
+
+    /**
+     * Set error type
+     *
+     * @param  int $type
+     * @return $this
+     * @access public
+     * @api
+     */
+    public function setErrorType(/*# int */ $type)
+    {
+        $this->error_type = $type;
         return $this;
     }
 
@@ -275,7 +280,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
     protected function resolveUnknown(/*# string */ $name)
     {
         // warn if reference unknown
-        $this->setError(
+        $this->throwError(
             Message::get(Message::CONFIG_REFERENCE_UNKNOWN, $name),
             Message::CONFIG_REFERENCE_UNKNOWN
         );
@@ -300,7 +305,7 @@ class Config extends ObjectAbstract implements ConfigInterface, ReferenceInterfa
      * @throws LogicException if current $error_type is to throw exception
      * @access protected
      */
-    protected function setError(/*# string */ $message, /*# int */ $code)
+    protected function throwError(/*# string */ $message, /*# int */ $code)
     {
         switch ($this->error_type) {
             case self::ERROR_WARNING:

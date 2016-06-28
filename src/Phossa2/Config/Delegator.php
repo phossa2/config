@@ -56,30 +56,30 @@ class Delegator extends ObjectAbstract implements DelegatorInterface, ConfigInte
     /**
      * {@inheritDoc}
      */
-    protected function isValidContainer($container)/*# : bool */
+    protected function isValidRegistry($registry)/*# : bool */
     {
-        return $container instanceof ConfigInterface;
+        return $registry instanceof ConfigInterface;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function hasInContainer(
-        $container,
+    protected function hasInRegistry(
+        $registry,
         /*# string */ $key
     )/*# : bool */ {
-        /* @var $container ConfigInterface */
-        return $container->has($key);
+        /* @var $registry ConfigInterface */
+        return $registry->has($key);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function getFromContainer(
-        $container,
+    protected function getFromRegistry(
+        $registry,
         /*# string */ $key
     ) {
-        /* @var $container ConfigInterface */
-        return $container->get($key);
+        /* @var $registry ConfigInterface */
+        return $registry->get($key);
     }
 }
