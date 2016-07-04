@@ -15,9 +15,9 @@
 namespace Phossa2\Config;
 
 use Phossa2\Shared\Base\ObjectAbstract;
+use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Shared\Reference\DelegatorTrait;
 use Phossa2\Config\Interfaces\ConfigInterface;
-use Phossa2\Config\Interfaces\ArrayAccessTrait;
 use Phossa2\Shared\Reference\DelegatorInterface;
 
 /**

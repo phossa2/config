@@ -12,7 +12,7 @@
  */
 /*# declare(strict_types=1); */
 
-namespace Phossa2\Config\Interfaces;
+namespace Phossa2\Config\Traits;
 
 /**
  * Implementation of ArrayAccess for Config
