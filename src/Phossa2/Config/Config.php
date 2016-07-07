@@ -157,9 +157,6 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Re
      */
     public function set(/*# string */ $key, $value)
     {
-        // clear reference cache
-        $this->clearLocalCache();
-
         // lazy load, no dereference
         $this->loadConfig((string) $key);
 
