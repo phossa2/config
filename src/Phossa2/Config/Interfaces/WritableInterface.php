@@ -14,37 +14,44 @@
 
 namespace Phossa2\Config\Interfaces;
 
-use Phossa2\Config\Exception\LogicException;
-
 /**
- * ConfigInterface
+ * WritableInterface
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
  * @version 2.0.0
  * @since   2.0.0 added
  */
-interface ConfigInterface
+interface WritableInterface
 {
     /**
-     * Get a configure value. returns NULL if not found
+     * Set configuration
      *
      * @param  string $key configuration key
-     * @param  mixed default value if not found
-     * @return mixed
+     * @param  mixed values
+     * @return $this
      * @throws LogicException if error type is to throw exception
      * @access public
      * @api
      */
-    public function get(/*# string */ $key, $default = null);
+    public function set(/*# string */ $key, $value);
 
     /**
-     * Has a configure by key ?
+     * Is writable ?
      *
-     * @param  string $key configuration key
      * @return bool
      * @access public
      * @api
      */
-    public function has(/*# string */ $key)/*# : bool */;
+    public function isWritable()/*# : bool */;
+
+    /**
+     * Set to false or the writer object
+     *
+     * @param  mixed|false $writable
+     * @return $this
+     * @access public
+     * @api
+     */
+    public function setWritable($writable);
 }

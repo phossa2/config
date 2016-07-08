@@ -14,11 +14,15 @@
 
 namespace Phossa2\Config;
 
+use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
+use Phossa2\Config\Traits\WritableTrait;
 use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Shared\Reference\DelegatorTrait;
+use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Shared\Reference\DelegatorInterface;
+use Phossa2\Config\Interfaces\WritableInterface;
 
 /**
  * Delegator
@@ -32,9 +36,9 @@ use Phossa2\Shared\Reference\DelegatorInterface;
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterface, ConfigInterface
+class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterface, ConfigInterface, WritableInterface
 {
-    use ArrayAccessTrait, DelegatorTrait;
+    use ArrayAccessTrait, DelegatorTrait, WritableTrait;
 
     /**
      * constructor
@@ -43,8 +47,6 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
      */
     public function __construct()
     {
-        // at least one dummy config registry
-        (new Config())->setDelegator($this);
     }
 
     /**
@@ -69,12 +71,32 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
     /**
      * {@inheritDoc}
      */
+    public function isWritable()/*# : bool */
+    {
+        foreach ($this->lookup_pool as $reg) {
+            if ($reg instanceof WritableInterface &&
+                $reg->isWritable()
+            ) {
+                $this->setWritable($reg);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function set(/*# string */ $key, $value)
     {
-        // set with the dummy registry
-        $reg = $this->lookup_pool[0];
-        $reg->set($key, $value);
-        return $this;
+        if ($this->isWritable()) {
+            $this->writable->set($key, $value);
+            return $this;
+        }
+        throw new LogicException(
+            Message::get(Message::CONFIG_NOT_WRITABLE),
+            Message::CONFIG_NOT_WRITABLE
+        );
     }
 
     /**

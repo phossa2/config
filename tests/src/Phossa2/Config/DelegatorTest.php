@@ -95,8 +95,10 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet3()
     {
-        $config1 = new Config();
-        $config2 = new Config();
+        // both writable now
+        $config1 = (new Config())->setWritable(true);
+        $config2 = (new Config())->setWritable(true);
+
         $config1->setErrorType(Config::ERROR_IGNORE);
         $config2->setErrorType(Config::ERROR_IGNORE);
 
@@ -105,13 +107,13 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
         $config1['db.user'] = '${system.user}';
         $config2['system.user'] = 'root';
 
-        // reference unresolved, return TRUE
+        // reference unresolved
         $this->assertEquals('${system.user}', $config1['db.user']);
 
         $config1->setDelegator($delegator);
         $config2->setDelegator($delegator);
 
-        // reference resolved, return TRUE
+        // reference resolved
         $this->assertEquals('root', $config1['db.user']);
 
         // delegator
@@ -120,13 +122,17 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
         // not in config2
         $this->assertEquals(null, $config2['db.user']);
 
-        // overwrite
+        // overwrite the first config
         $delegator['db.user'] = 'test';
         $this->assertEquals('test', $delegator['db.user']);
-        $this->assertEquals('root', $config1['db.user']);
+        $this->assertEquals('test', $config1['db.user']);
+
+        // diable writable for first config
+        $config1->setWritable(false);
 
         // new key added
         $delegator['db.new'] = 'new';
         $this->assertEquals('new', $delegator['db.new']);
+        $this->assertEquals('new', $config2['db.new']);
     }
 }

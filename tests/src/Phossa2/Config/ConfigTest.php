@@ -153,6 +153,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testSet()
     {
         $this->assertFalse($this->object->has('bingo.wow'));
+        $this->object->setWritable(true);
 
         $this->object->set('bingo.wow', 1);
 
@@ -181,6 +182,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testArrayAccess()
     {
+        $this->object->setWritable(true);
+
         // offsetExists
         $this->assertTrue(isset($this->object['db.auth.port']));
 

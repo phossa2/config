@@ -19,12 +19,14 @@ use Phossa2\Config\Message\Message;
 use Phossa2\Config\Loader\DummyLoader;
 use Phossa2\Shared\Tree\TreeInterface;
 use Phossa2\Shared\Base\ObjectAbstract;
+use Phossa2\Config\Traits\WritableTrait;
 use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Shared\Reference\ReferenceTrait;
 use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Config\Loader\ConfigLoaderInterface;
 use Phossa2\Shared\Reference\ReferenceInterface;
+use Phossa2\Config\Interfaces\WritableInterface;
 use Phossa2\Shared\Reference\DelegatorAwareTrait;
 use Phossa2\Shared\Reference\DelegatorAwareInterface;
 
@@ -41,9 +43,9 @@ use Phossa2\Shared\Reference\DelegatorAwareInterface;
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, ReferenceInterface, DelegatorAwareInterface
+class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, WritableInterface, ReferenceInterface, DelegatorAwareInterface
 {
-    use ReferenceTrait, DelegatorAwareTrait, ArrayAccessTrait;
+    use ReferenceTrait, DelegatorAwareTrait, ArrayAccessTrait, WritableTrait;
 
     /**
      * error type
@@ -157,13 +159,19 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Re
      */
     public function set(/*# string */ $key, $value)
     {
-        // lazy load, no dereference
-        $this->loadConfig((string) $key);
+        if ($this->isWritable()) {
+            // lazy load, no dereference
+            $this->loadConfig((string) $key);
 
-        // replace the node
-        $this->config->addNode($key, $value);
+            // replace the node
+            $this->config->addNode($key, $value);
 
-        return $this;
+            return $this;
+        }
+        $this->throwError(
+            Message::get(Message::CONFIG_NOT_WRITABLE),
+            Message::CONFIG_NOT_WRITABLE
+        );
     }
 
     /**
