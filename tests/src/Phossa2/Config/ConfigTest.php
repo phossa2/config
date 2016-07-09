@@ -3,6 +3,7 @@
 namespace Phossa2\Config;
 
 use Phossa2\Config\Loader\ConfigFileLoader;
+use Phossa2\Shared\Tree\Tree;
 
 /**
  * Config test case.
@@ -32,6 +33,32 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->object = null;
         parent::tearDown();
+    }
+
+    /**
+     * Test constructor
+     *
+     * @covers Phossa2\Config\Reference\Config::__construct
+     */
+    public function testConstructor()
+    {
+        $data = [
+            'system.id' => 'phossa',
+        ];
+
+        // import data directly
+        $config1 = new Config(null, null, $data);
+        $this->assertEquals(
+            'phossa',
+            $config1->get('system.id')
+        );
+
+        // import Tree directly
+        $config2 = new Config(null, new Tree($data));
+        $this->assertEquals(
+            'phossa',
+            $config2->get('system.id')
+        );
     }
 
     /**
