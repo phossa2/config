@@ -91,17 +91,24 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
     /**
      * Constructor
      *
-     * @param  ConfigLoaderInterface $loader
+     * @param  ConfigLoaderInterface|array $loader
      * @param  TreeInterface $configTree
      * @access public
      * @api
      */
     public function __construct(
-        ConfigLoaderInterface $loader = null,
+        $loader = null,
         TreeInterface $configTree = null
     ) {
+        if (is_array($loader)) {
+            $data = $loader;
+            $loader = new DummyLoader();
+        } else {
+            $data = [];
+        }
+
         $this->loader = $loader ?: new DummyLoader();
-        $this->config = $configTree ?: new Tree();
+        $this->config = $configTree ?: new Tree($data);
     }
 
     /**
