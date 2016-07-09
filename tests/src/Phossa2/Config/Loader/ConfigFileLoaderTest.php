@@ -34,8 +34,8 @@ class ConfigFileLoaderTest extends \PHPUnit_Framework_TestCase
     /**
      * getPrivateProperty
      *
-     * @param 	string $propertyName
-     * @return	the property
+     * @param  string $propertyName
+     * @return the property
      */
     public function getPrivateProperty($propertyName, $object) {
         $reflector = new \ReflectionClass($object);
