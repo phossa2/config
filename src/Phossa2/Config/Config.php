@@ -27,7 +27,6 @@ use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Config\Loader\ConfigLoaderInterface;
 use Phossa2\Shared\Reference\ReferenceInterface;
 use Phossa2\Config\Interfaces\WritableInterface;
-use Phossa2\Shared\Reference\DelegatorInterface;
 use Phossa2\Shared\Reference\DelegatorAwareTrait;
 use Phossa2\Shared\Reference\DelegatorAwareInterface;
 
@@ -188,16 +187,6 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
     public function setErrorType(/*# int */ $type)
     {
         $this->error_type = $type;
-        return $this;
-    }
-
-    /**
-     * Overwrite setDelegator() in DelegatorAwareTrait
-     * {@inheritDoc}
-     */
-    public function setDelegator(DelegatorInterface $delegator)
-    {
-        $this->delegator = $delegator->addRegistry($this);
         return $this;
     }
 
