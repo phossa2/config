@@ -28,7 +28,7 @@ interface WritableInterface
      * Set configuration
      *
      * @param  string $key configuration key
-     * @param  mixed values
+     * @param  mixed value
      * @return $this
      * @throws LogicException if error type is to throw exception
      * @access public
