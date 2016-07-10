@@ -41,15 +41,6 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
     use ArrayAccessTrait, DelegatorTrait, WritableTrait;
 
     /**
-     * constructor
-     *
-     * @access public
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function get(/*# string */ $key, $default = null)
