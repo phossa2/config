@@ -4,7 +4,7 @@
     "license": "MIT",
     "homepage": "https://github.com/phossa2/config",
     "description": "Configuration management libraray for PHP",
-    "keywords": [ "phossa2", "phossa", "configuration", "configure", "config" ],
+    "keywords": [ "phossa2", "configuration", "configure", "config" ],
     "authors": [
         {
             "name": "Hong Zhang",
