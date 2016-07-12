@@ -294,18 +294,18 @@ APIs
 
 - <a name="api"></a>ConfigInterface API
 
-  - `get($key, $default = null)`
+  - `get($id, $default = null)`
 
-    `$key` is the a flat notation like `db.auth.host`. `$default` is used if
+    `$id` is the a flat notation like `db.auth.host`. `$default` is used if
     no configs found.
 
-    Return value might be a `string` or `array` base on the `$key`.
+    Return value might be a `string` or `array` base on the `$id`.
 
-  - `has($key)`
+  - `has($id)`
 
-    Test if `$key` exists or not. Returns a `boolean` value.
+    Test if `$id` exists or not. Returns a `boolean` value.
 
-  - `set($key, $value)`
+  - `set($id, $value)`
 
     Set the configuration manually in this *session*. The value will **NOT**
     be reflected in any config files unless you modify config file manually.

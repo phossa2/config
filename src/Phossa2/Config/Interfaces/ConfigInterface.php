@@ -29,22 +29,22 @@ interface ConfigInterface
     /**
      * Get a configure value. returns NULL if not found
      *
-     * @param  string $key configuration key
-     * @param  mixed default value if not found
+     * @param  string $id configuration id/key/name
+     * @param  mixed default value if $id not found
      * @return mixed
      * @throws LogicException if error type is to throw exception
      * @access public
      * @api
      */
-    public function get(/*# string */ $key, $default = null);
+    public function get(/*# string */ $id, $default = null);
 
     /**
-     * Has a configure by key ?
+     * Has a configure by $id ?
      *
-     * @param  string $key configuration key
+     * @param  string $id configuration id/key/name
      * @return bool
      * @access public
      * @api
      */
-    public function has(/*# string */ $key)/*# : bool */;
+    public function has(/*# string */ $id)/*# : bool */;
 }

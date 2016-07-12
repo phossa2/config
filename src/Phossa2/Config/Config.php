@@ -19,7 +19,6 @@ use Phossa2\Config\Message\Message;
 use Phossa2\Config\Loader\DummyLoader;
 use Phossa2\Shared\Tree\TreeInterface;
 use Phossa2\Shared\Base\ObjectAbstract;
-use Phossa2\Config\Traits\WritableTrait;
 use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Shared\Reference\ReferenceTrait;
 use Phossa2\Config\Exception\LogicException;
@@ -40,12 +39,13 @@ use Phossa2\Shared\Reference\DelegatorAwareInterface;
  * @see     ConfigInterface
  * @see     ReferenceInterface
  * @see     DelegatorAwareInterface
+ * @see     WritableInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, WritableInterface, ReferenceInterface, DelegatorAwareInterface
+class Config extends ObjectAbstract implements ConfigInterface, WritableInterface, \ArrayAccess, ReferenceInterface, DelegatorAwareInterface
 {
-    use ReferenceTrait, DelegatorAwareTrait, ArrayAccessTrait, WritableTrait;
+    use ReferenceTrait, DelegatorAwareTrait, ArrayAccessTrait;
 
     /**
      * error type
@@ -109,14 +109,14 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
     /**
      * {@inheritDoc}
      */
-    public function get(/*# string */ $key, $default = null)
+    public function get(/*# string */ $id, $default = null)
     {
         try {
             // lazy load
-            $this->loadConfig((string) $key);
+            $this->loadConfig((string) $id);
 
             //  get value
-            $val = $this->config->getNode((string) $key);
+            $val = $this->config->getNode((string) $id);
 
             // dereference
             $this->deReferenceArray($val);
@@ -133,7 +133,7 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
     /**
      * {@inheritDoc}
      */
-    public function has(/*# string */ $key)/*# : bool */
+    public function has(/*# string */ $id)/*# : bool */
     {
         try {
             // update error type
@@ -141,10 +141,10 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
             $this->setErrorType(self::ERROR_IGNORE);
 
             // lazy load
-            $this->loadConfig((string) $key);
+            $this->loadConfig((string) $id);
 
             //  get value
-            $result = null !== $this->config->getNode((string) $key);
+            $result = null !== $this->config->getNode((string) $id);
 
             // restore error type
             $this->setErrorType($err);
@@ -159,21 +159,22 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
     /**
      * {@inheritDoc}
      */
-    public function set(/*# string */ $key, $value)
+    public function set(/*# string */ $id, $value)
     {
         if ($this->isWritable()) {
             // lazy load, no dereference
-            $this->loadConfig((string) $key);
+            $this->loadConfig((string) $id);
 
             // replace the node
-            $this->config->addNode($key, $value);
+            $this->config->addNode($id, $value);
 
             return $this;
+        } else {
+            $this->throwError(
+                Message::get(Message::CONFIG_NOT_WRITABLE),
+                Message::CONFIG_NOT_WRITABLE
+            );
         }
-        $this->throwError(
-            Message::get(Message::CONFIG_NOT_WRITABLE),
-            Message::CONFIG_NOT_WRITABLE
-        );
     }
 
     /**
@@ -193,15 +194,15 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
     /**
      * Load config
      *
-     * @param  string $key
+     * @param  string $id
      * @return $this
      * @throws LogicException if current $error_type is to throw exception
      * @access protected
      */
-    protected function loadConfig(/*# string */ $key)
+    protected function loadConfig(/*# string */ $id)
     {
         // get group name
-        $group = $this->getGroupName($key);
+        $group = $this->getGroupName($id);
 
         // $group loaded ?
         if (isset($this->loaded[$group])) {
@@ -266,14 +267,14 @@ class Config extends ObjectAbstract implements \ArrayAccess, ConfigInterface, Wr
     /**
      * Get group name
      *
-     * @param  string $key
+     * @param  string $id
      * @return string
      * @access protected
      */
-    protected function getGroupName(/*# string */ $key)/*# : string */
+    protected function getGroupName(/*# string */ $id)/*# : string */
     {
-        // first field of the $key
-        return explode($this->config->getDelimiter(), $key)[0];
+        // first field of the $id
+        return explode($this->config->getDelimiter(), $id)[0];
     }
 
     /**

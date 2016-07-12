@@ -51,5 +51,5 @@ trait WritableTrait
     }
 
     // from WritableInterface
-    abstract public function set(/*# string */ $key, $value);
+    abstract public function set(/*# string */ $id, $value);
 }

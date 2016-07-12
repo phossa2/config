@@ -16,7 +16,6 @@ namespace Phossa2\Config;
 
 use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
-use Phossa2\Config\Traits\WritableTrait;
 use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Shared\Reference\DelegatorTrait;
 use Phossa2\Config\Exception\LogicException;
@@ -33,20 +32,23 @@ use Phossa2\Config\Interfaces\WritableInterface;
  * @author  Hong Zhang <phossa@126.com>
  * @see     ObjectAbstract
  * @see     DelegatorInterface
+ * @see     ConfigInterface
+ * @see     \ArrayAccess
+ * @see     WritableInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterface, ConfigInterface, WritableInterface
+class Delegator extends ObjectAbstract implements DelegatorInterface, ConfigInterface, \ArrayAccess, WritableInterface
 {
-    use ArrayAccessTrait, DelegatorTrait, WritableTrait;
+    use ArrayAccessTrait, DelegatorTrait;
 
     /**
      * {@inheritDoc}
      */
-    public function get(/*# string */ $key, $default = null)
+    public function get(/*# string */ $id, $default = null)
     {
-        if ($this->hasInLookup($key)) {
-            return $this->getFromLookup($key);
+        if ($this->hasInLookup($id)) {
+            return $this->getFromLookup($id);
         }
         return $default;
     }
@@ -54,9 +56,9 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
     /**
      * {@inheritDoc}
      */
-    public function has(/*# string */ $key)/*# : bool */
+    public function has(/*# string */ $id)/*# : bool */
     {
-        return $this->hasInLookup($key);
+        return $this->hasInLookup($id);
     }
 
     /**
@@ -78,16 +80,17 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
     /**
      * {@inheritDoc}
      */
-    public function set(/*# string */ $key, $value)
+    public function set(/*# string */ $id, $value)
     {
         if ($this->isWritable()) {
-            $this->writable->set($key, $value);
+            $this->writable->set($id, $value);
             return $this;
+        } else {
+            throw new LogicException(
+                Message::get(Message::CONFIG_NOT_WRITABLE),
+                Message::CONFIG_NOT_WRITABLE
+            );
         }
-        throw new LogicException(
-            Message::get(Message::CONFIG_NOT_WRITABLE),
-            Message::CONFIG_NOT_WRITABLE
-        );
     }
 
     /**
@@ -103,10 +106,10 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
      */
     protected function hasInRegistry(
         $registry,
-        /*# string */ $key
+        /*# string */ $id
     )/*# : bool */ {
         /* @var $registry ConfigInterface */
-        return $registry->has($key);
+        return $registry->has($id);
     }
 
     /**
@@ -114,9 +117,9 @@ class Delegator extends ObjectAbstract implements \ArrayAccess, DelegatorInterfa
      */
     protected function getFromRegistry(
         $registry,
-        /*# string */ $key
+        /*# string */ $id
     ) {
         /* @var $registry ConfigInterface */
-        return $registry->get($key);
+        return $registry->get($id);
     }
 }

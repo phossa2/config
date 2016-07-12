@@ -24,6 +24,8 @@ namespace Phossa2\Config\Traits;
  */
 trait ArrayAccessTrait
 {
+    use WritableTrait;
+
     public function offsetExists($offset)/*# : bool */
     {
         return $this->has($offset);
@@ -44,7 +46,7 @@ trait ArrayAccessTrait
         $this->set($offset, null);
     }
 
-    abstract public function has(/*# string */ $key)/*# : bool */;
-    abstract public function get(/*# string */ $key, $default = null);
-    abstract public function set(/*# string */ $key, $value);
+    // from ConfigInterface
+    abstract public function has(/*# string */ $id)/*# : bool */;
+    abstract public function get(/*# string */ $id, $default = null);
 }

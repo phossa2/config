@@ -27,14 +27,14 @@ interface WritableInterface
     /**
      * Set configuration
      *
-     * @param  string $key configuration key
+     * @param  string $id configuration id/key/name
      * @param  mixed value
      * @return $this
      * @throws LogicException if error type is to throw exception
      * @access public
      * @api
      */
-    public function set(/*# string */ $key, $value);
+    public function set(/*# string */ $id, $value);
 
     /**
      * Is writable ?
