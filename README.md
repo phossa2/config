@@ -246,24 +246,23 @@ Usage
     only, not on the config registry itself.
 
    ```php
-   use Phossa2\Config\Config;
-   use Phossa2\Config\Delegator;
-
    $config1 = new Config();
    $config2 = new Config();
    $delegator = new Delegator();
 
+   // add some values
    $config1['db.user'] = '${system.user}';
    $config2['system.user'] = 'root';
 
-   // reference unresolved, return TRUE
-   var_dump($config1['db.user'] === '${system.user}');
+   // reference unresolved in $config1
+   var_dump($config1['db.user'] === '${system.user}'); // true
 
-   $config1->setDelegator($delegator);
-   $config2->setDelegator($delegator);
+   // both configs now have delegator
+   $delegator->addRegistry($config1);
+   $delegator->addRegistry($config2);
 
-   // reference resolved, return TRUE
-   var_dump($config1['db.user'] === 'root');
+   // reference resolved
+   var_dump($config1['db.user'] === 'root'); // true
    ```
 
   `Delegator` class also implements the `ConfigInterface` and `ArrayAccess`
@@ -281,7 +280,10 @@ Usage
           getenv('CONFIG_DIR'), // loaded from .env file
           getenv('APP_ENV')     // loaded from .env file
       )
-  ))->setDelegator($delegator);
+  ));
+
+  // register $config3 with $delegator
+  $delegator->addRegistry($config3);
 
   // not delegator contains $config1, $config2 and $config3
   if ($delegator->has('redis.port')) {
@@ -297,9 +299,9 @@ APIs
   - `get($id, $default = null)`
 
     `$id` is the a flat notation like `db.auth.host`. `$default` is used if
-    no configs found.
+    no config value found.
 
-    Return value might be a `string` or `array` base on the `$id`.
+    Return value might be a `string`, `array` or even `object` base on the `$id`.
 
   - `has($id)`
 
@@ -310,12 +312,47 @@ APIs
     Set the configuration manually in this *session*. The value will **NOT**
     be reflected in any config files unless you modify config file manually.
 
-    `$value` can be a `string` or `array`.
+    `$value` can be a `string`, `array` or `object`.
+
+    This feature can be disabled by
+
+    ```php
+    // disable writing to the $config
+    $config->setWritable(false);
+    ```
 
 - <a name="other"></a>Other public methods
 
-  - Reference related, `setReferencePattern()`, `hasReference()` and
-    `deReference()`, `deReferenceArray()`.
+  - Writable related
+
+    - `setWritable(bool $writable)`
+
+      Enable or disable the `set()` functionality.
+
+    - `isWritable(): bool`
+
+      Test to see if config writable.
+
+  - Reference related
+
+    - `setReferencePattern($start, $end)`
+
+      Reset the reference start chars and ending chars. The default are `'${'` and
+      `'}'`
+
+    - `hasReference($string): bool`
+
+      Test to see if there are references in the `$string`
+
+    - `deReference($string): mixed`
+
+      Dereference all the references in the `$string`. The result might be `string`,
+      `array` or even `object`.
+
+    - `deReferenceArray(&$data)`
+
+      Recursively dereference everything in the `$data`. `$data` might be `string`
+      or `array`. Other input will be untouched.
 
 Dependencies
 ---
