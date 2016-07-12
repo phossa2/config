@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "phossa2/shared": "^2.0.13"
+        "phossa2/shared": "^2.0.14"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*"
