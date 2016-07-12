@@ -31,7 +31,7 @@ trait WritableTrait
      * @var    false|mixed
      * @access protected
      */
-    protected $writable = false;
+    protected $writable = true;
 
     /**
      * {@inheritDoc}
