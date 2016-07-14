@@ -17,7 +17,6 @@ namespace Phossa2\Config;
 use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
 use Phossa2\Config\Traits\ArrayAccessTrait;
-use Phossa2\Shared\Reference\DelegatorTrait;
 use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Config\Interfaces\WritableInterface;
@@ -41,7 +40,7 @@ use Phossa2\Config\Traits\DelegatorWritableTrait;
  */
 class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess
 {
-    use ArrayAccessTrait, DelegatorTrait, DelegatorWritableTrait;
+    use ArrayAccessTrait, DelegatorWritableTrait;
 
     /**
      * {@inheritDoc}

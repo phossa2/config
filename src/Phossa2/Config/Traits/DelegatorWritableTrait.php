@@ -14,6 +14,7 @@
 
 namespace Phossa2\Config\Traits;
 
+use Phossa2\Shared\Reference\DelegatorTrait;
 use Phossa2\Config\Interfaces\WritableInterface;
 
 /**
@@ -27,7 +28,7 @@ use Phossa2\Config\Interfaces\WritableInterface;
  */
 trait DelegatorWritableTrait
 {
-    use WritableTrait;
+    use WritableTrait, DelegatorTrait;
 
     /**
      * Override `isWritable()` in the WritableTrait
