@@ -258,8 +258,8 @@ Usage
    var_dump($config1['db.user'] === '${system.user}'); // true
 
    // both configs now have delegator
-   $delegator->addRegistry($config1);
-   $delegator->addRegistry($config2);
+   $delegator->addConfig($config1);
+   $delegator->addConfig($config2);
 
    // reference resolved
    var_dump($config1['db.user'] === 'root'); // true
@@ -283,7 +283,7 @@ Usage
   ));
 
   // register $config3 with $delegator
-  $delegator->addRegistry($config3);
+  $delegator->addConfig($config3);
 
   // not delegator contains $config1, $config2 and $config3
   if ($delegator->has('redis.port')) {

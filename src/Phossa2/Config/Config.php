@@ -19,6 +19,7 @@ use Phossa2\Config\Message\Message;
 use Phossa2\Config\Loader\DummyLoader;
 use Phossa2\Shared\Tree\TreeInterface;
 use Phossa2\Shared\Base\ObjectAbstract;
+use Phossa2\Config\Traits\WritableTrait;
 use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Shared\Reference\ReferenceTrait;
 use Phossa2\Config\Exception\LogicException;
@@ -45,7 +46,7 @@ use Phossa2\Shared\Reference\DelegatorAwareInterface;
  */
 class Config extends ObjectAbstract implements ConfigInterface, WritableInterface, \ArrayAccess, ReferenceInterface, DelegatorAwareInterface
 {
-    use ReferenceTrait, DelegatorAwareTrait, ArrayAccessTrait;
+    use ReferenceTrait, DelegatorAwareTrait, ArrayAccessTrait, WritableTrait;
 
     /**
      * error type

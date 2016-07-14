@@ -48,7 +48,7 @@ interface WritableInterface
     /**
      * Set to false or the writer object
      *
-     * @param  mixed|false $writable
+     * @param  mixed|bool $writable
      * @return $this
      * @access public
      * @api

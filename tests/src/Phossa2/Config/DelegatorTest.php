@@ -61,7 +61,7 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet1()
     {
-        $this->delegator->addRegistry($this->config1);
+        $this->delegator->addConfig($this->config1);
 
         // resolve to unknown reference
         $this->assertEquals(
@@ -78,8 +78,8 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
     public function testGet2()
     {
         // 2 configs in the delegator
-        $this->delegator->addRegistry($this->config1);
-        $this->delegator->addRegistry($this->config2);
+        $this->delegator->addConfig($this->config1);
+        $this->delegator->addConfig($this->config2);
 
         // resolve to unknown reference
         $this->assertEquals(
@@ -110,8 +110,8 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
         // reference unresolved
         $this->assertEquals('${system.user}', $config1['db.user']);
 
-        $delegator->addRegistry($config1);
-        $delegator->addRegistry($config2);
+        $delegator->addConfig($config1);
+        $delegator->addConfig($config2);
 
         // reference resolved
         $this->assertEquals('root', $config1['db.user']);
