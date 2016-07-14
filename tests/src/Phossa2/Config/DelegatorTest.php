@@ -135,4 +135,36 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('new', $delegator['db.new']);
         $this->assertEquals('new', $config2['db.new']);
     }
+
+    /**
+     * Test delegator set writable
+     *
+     * @covers Phossa2\Config\Reference\Delegator::isWritable()
+     * @covers Phossa2\Config\Reference\Delegator::setWritable()
+     */
+    public function testSetWritable()
+    {
+        // both readonly
+        $config1 = (new Config())->setWritable(false);
+        $config2 = (new Config())->setWritable(false);
+
+        $delegator = new Delegator();
+        $delegator->addConfig($config1);
+        $delegator->addConfig($config2);
+
+        // delegator is readonly
+        $this->assertFalse($delegator->isWritable());
+
+        // set writable
+        $delegator->setWritable(true);
+        $this->assertTrue($delegator->isWritable());
+        $this->assertTrue($config1->isWritable());
+        $this->assertFalse($config2->isWritable());
+
+        // set non writable
+        $delegator->setWritable(false);
+        $this->assertFalse($delegator->isWritable());
+        $this->assertFalse($config1->isWritable());
+        $this->assertFalse($config2->isWritable());
+    }
 }
