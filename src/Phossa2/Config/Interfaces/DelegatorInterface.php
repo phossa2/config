@@ -15,7 +15,6 @@
 namespace Phossa2\Config\Interfaces;
 
 use Phossa2\Config\Interfaces\ConfigInterface;
-use Phossa2\Config\Interfaces\WritableInterface;
 use Phossa2\Shared\Reference\DelegatorInterface as GenericDelegatorInterface;
 
 /**
@@ -27,11 +26,10 @@ use Phossa2\Shared\Reference\DelegatorInterface as GenericDelegatorInterface;
  * @author  Hong Zhang <phossa@126.com>
  * @see     \Phossa2\Shared\Reference\DelegatorInterface
  * @see     ConfigInterface
- * @see     WritableInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
-interface DelegatorInterface extends GenericDelegatorInterface, ConfigInterface, WritableInterface
+interface DelegatorInterface extends GenericDelegatorInterface, ConfigInterface
 {
     /**
      * Add config to the delegator

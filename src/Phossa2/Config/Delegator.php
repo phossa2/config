@@ -32,13 +32,12 @@ use Phossa2\Config\Traits\DelegatorWritableTrait;
  * @author  Hong Zhang <phossa@126.com>
  * @see     ObjectAbstract
  * @see     DelegatorInterface
- * @see     ConfigInterface
  * @see     \ArrayAccess
  * @see     WritableInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
-class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess
+class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess, WritableInterface
 {
     use ArrayAccessTrait, DelegatorWritableTrait;
 
