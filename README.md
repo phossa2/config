@@ -6,9 +6,10 @@
 [![Latest Stable Version](https://img.shields.io/packagist/vpre/phossa2/config.svg?style=flat)](https://packagist.org/packages/phossa2/config)
 [![License](https://poser.pugx.org/phossa2/config/license)](http://mit-license.org/)
 
-**phossa2/config** is a simple, easy yet powerful configuration management library
-for PHP. The design idea is inspired by another github project
-[mrjgreen/config](https://github.com/ecfectus/config) but with some cool features.
+**phossa2/config** is a simple, easy yet powerful configuration management
+library for PHP. The design idea is inspired by another github project
+[mrjgreen/config](https://github.com/ecfectus/config) but with some cool
+features.
 
 It requires PHP 5.4, supports PHP 7.0+ and HHVM. It is compliant with
 [PSR-1][PSR-1], [PSR-2][PSR-2], [PSR-4][PSR-4].
@@ -63,8 +64,8 @@ Features
    |___ system.php
   ```
 
-- Use an [environment](#env) value, such as `production` or `production/host1` for
-  switching between different configurations.
+- Use an [environment](#env) value, such as `production` or `production/host1`
+  for switching between different configurations.
 
 - Use of [references](#ref) in configuration value is fully supported, such as
   `${system.tmpdir}`.
@@ -77,7 +78,8 @@ Features
 
 - Reference lookup [delegation](#delegate) and config chaining.
 
-- Support `.php`, `.json`, `.ini`, `.xml` and `.serialized` type of config files.
+- Support `.php`, `.json`, `.ini`, `.xml` and `.serialized` type of config
+  files.
 
 Usage
 ---
@@ -85,8 +87,8 @@ Usage
 - <a name="env"></a>Use environment value
 
   Usually application running environment is different on different servers. A
-  good practice is setting environment in a `.env` file somewhere on the host, and
-  put all configuration files in one central `config/` dir.
+  good practice is setting environment in a `.env` file somewhere on the host,
+  and put all configuration files in one central `config/` dir.
 
   A sample `.env` file,
 
@@ -133,8 +135,8 @@ Usage
 
   - Configuration grouping
 
-    Configurations are gathered into one directory and are grouped into files and
-    subdirectories for ease of management.
+    Configurations are gathered into one directory and are grouped into files
+    and subdirectories for ease of management.
 
     For example, the `config/system.php` holds `system.*` configurations
 
@@ -232,8 +234,8 @@ Usage
   $db_host = $config->get('db.auth.host');
   ```
 
-  Both flat notation and array notation are supported and can co-exist at the same
-  time.
+  Both flat notation and array notation are supported and can co-exist at the
+  same time.
 
   ```php
   // db config file
@@ -256,20 +258,20 @@ Usage
     Reference lookup delegation is similar to the delegation idea of
     [Interop Container Delegate Lookup](https://github.com/container-interop/fig-standards/blob/master/proposed/container.md)
 
-    - Calls to the `get()` method should only return an entry if the entry is part of
-      the config registry. If the entry is not part of the registry, a `NULL` will be
-      returned as described in `ConfigInterface`.
+    - Calls to the `get()` method should only return an entry if the entry is
+      part of the config registry. If the entry is not part of the registry, a
+      `NULL` will be returned as described in `ConfigInterface`.
 
-    - Calls to the `has()` method should only return true if the entry is part of the
-      config registry. If the entry is not part of the registry, false should be
-      returned.
+    - Calls to the `has()` method should only return true if the entry is part
+      of the config registry. If the entry is not part of the registry, false
+      should be returned.
 
-    - If the fetched entry has dependencies (references), **instead** of performing
-      the reference lookup in this config registry, the lookup is performed on the
-      delegator.
+    - If the fetched entry has dependencies (references), **instead** of
+      performing the reference lookup in this config registry, the lookup is
+      performed on the delegator.
 
-    - **Important** By default, the lookup *SHOULD* be performed on the delegator
-      only, not on the config registry itself.
+    - **Important** By default, the lookup *SHOULD* be performed on the
+      delegator only, not on the config registry itself.
 
       ```php
       $config1 = new Config();
@@ -291,8 +293,8 @@ Usage
       var_dump($config1['db.user'] === 'root'); // true
       ```
 
-    `Delegator` class implements the `ConfigInterface` and `ArrayAccess` interfaces,
-    thus can be used just like a normal config.
+    `Delegator` class implements the `ConfigInterface` and `ArrayAccess`
+    interfaces, thus can be used just like a normal config.
 
     ```php
     $dbUser = $delegator['db.user'];
@@ -373,8 +375,8 @@ APIs
 
   - `deReference(string $string): mixed`
 
-    Dereference all the references in the `$string`. The result might be `string`,
-    `array` or even `object`.
+    Dereference all the references in the `$string`. The result might be
+    `string`, `array` or even `object`.
 
   - `deReferenceArray(mixed &$data): $this`
 
@@ -385,7 +387,8 @@ APIs
 
   - `addConfig(ConfigInterface $config): $this`
 
-    Added one `Phossa2\Config\Interfaces\ConfigInterface` instance to the delegator.
+    Added one `Phossa2\Config\Interfaces\ConfigInterface` instance to the
+    delegator.
 
 - <a name="api_5"></a>Others
 
