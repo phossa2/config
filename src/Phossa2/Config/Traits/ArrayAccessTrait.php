@@ -14,11 +14,16 @@
 
 namespace Phossa2\Config\Traits;
 
+use Phossa2\Config\Interfaces\ConfigInterface;
+use Phossa2\Config\Interfaces\WritableInterface;
+
 /**
- * Implementation of ArrayAccess for Config
+ * Implementation of ArrayAccess for ConfigInterface/WritableInterface
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
+ * @see     ConfigInterface
+ * @see     WritableInterface
  * @version 2.0.0
  * @since   2.0.0 added
  */
@@ -47,5 +52,7 @@ trait ArrayAccessTrait
     // from ConfigInterface
     abstract public function has(/*# string */ $id)/*# : bool */;
     abstract public function get(/*# string */ $id, $default = null);
+
+    // from WritableInterface
     abstract public function set(/*# string */ $id, $value);
 }

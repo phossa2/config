@@ -14,27 +14,25 @@
 
 namespace Phossa2\Config\Interfaces;
 
-use Phossa2\Config\Interfaces\ConfigInterface;
-use Phossa2\Shared\Reference\DelegatorInterface as GenericDelegatorInterface;
+use Phossa2\Shared\Delegator\DelegatorInterface as GenericDelegatorInterface;
 
 /**
  * DelegatorInterface
  *
- * Own delegator interface
+ * Phossa2\Config's delegator interface
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
- * @see     \Phossa2\Shared\Reference\DelegatorInterface
+ * @see     \Phossa2\Shared\Delegator\DelegatorInterface
  * @see     ConfigInterface
- * @version 2.0.0
+ * @version 2.0.7
  * @since   2.0.0 added
+ * @since   2.0.7 changed GenericDelegatorInterface
  */
 interface DelegatorInterface extends GenericDelegatorInterface, ConfigInterface
 {
     /**
-     * Add config to the delegator
-     *
-     * Alias of `addRegistry()`
+     * Add config registry to the delegator
      *
      * @param  ConfigInterface $config
      * @return $this

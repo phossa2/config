@@ -14,24 +14,29 @@
 
 namespace Phossa2\Config\Traits;
 
-use Phossa2\Shared\Reference\DelegatorTrait;
+use Phossa2\Shared\Delegator\DelegatorTrait;
 use Phossa2\Config\Interfaces\WritableInterface;
 
 /**
  * DelegatorWritableTrait
+ *
+ * Writable for delegator
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
  * @see     WritableInterface
  * @version 2.0.0
  * @since   2.0.0 added
+ * @since   2.0.7 changed to Delegator\DelegatorTrait
  */
 trait DelegatorWritableTrait
 {
     use WritableTrait, DelegatorTrait;
 
     /**
-     * Override `isWritable()` in the WritableTrait
+     * Override `isWritable()` in the WritableTrait.
+     *
+     * Delegator's writability is base on its registries
      *
      * {@inheritDoc}
      */
@@ -55,13 +60,13 @@ trait DelegatorWritableTrait
      */
     public function setWritable($writable)
     {
-        // only if is boolean
+        // if is boolean
         if (is_bool($writable)) {
             if ($writable !== $this->isWritable()) {
                 $this->setRegistryWritable($writable);
             }
 
-        // set the writable registry
+        // set the writer to valid registry
         } else {
             $this->writable = $writable;
         }
@@ -69,7 +74,7 @@ trait DelegatorWritableTrait
     }
 
     /**
-     * Set underlying registries's writability
+     * Set underlying registry writability
      *
      * @param  bool $writable
      * @return $this
@@ -111,7 +116,7 @@ trait DelegatorWritableTrait
         foreach ($this->lookup_pool as $reg) {
             if ($reg instanceof WritableInterface) {
                 $reg->setWritable(true);
-                return $this;
+                break;
             }
         }
         return $this;

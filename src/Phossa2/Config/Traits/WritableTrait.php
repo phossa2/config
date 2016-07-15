@@ -22,12 +22,15 @@ use Phossa2\Config\Interfaces\WritableInterface;
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
  * @see     WritableInterface
- * @version 2.0.0
+ * @version 2.0.7
  * @since   2.0.0 added
+ * @since   2.0.7 removed abstract set()
  */
 trait WritableTrait
 {
     /**
+     * Writable defalt to TRUE
+     *
      * @var    false|mixed
      * @access protected
      */
@@ -49,7 +52,4 @@ trait WritableTrait
         $this->writable = $writable;
         return $this;
     }
-
-    // from WritableInterface
-    abstract public function set(/*# string */ $id, $value);
 }

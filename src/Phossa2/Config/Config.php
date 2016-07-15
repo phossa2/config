@@ -27,8 +27,9 @@ use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Config\Loader\ConfigLoaderInterface;
 use Phossa2\Shared\Reference\ReferenceInterface;
 use Phossa2\Config\Interfaces\WritableInterface;
-use Phossa2\Shared\Reference\DelegatorAwareTrait;
-use Phossa2\Shared\Reference\DelegatorAwareInterface;
+use Phossa2\Config\Interfaces\ChainingInterface;
+use Phossa2\Shared\Delegator\DelegatorAwareTrait;
+use Phossa2\Shared\Delegator\DelegatorAwareInterface;
 
 /**
  * Config
@@ -36,13 +37,14 @@ use Phossa2\Shared\Reference\DelegatorAwareInterface;
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
  * @see     ObjectAbstract
- * @see     \ArrayAccess
  * @see     ConfigInterface
+ * @see     WritableInterface
+ * @see     \ArrayAccess
  * @see     ReferenceInterface
  * @see     DelegatorAwareInterface
- * @see     WritableInterface
- * @version 2.0.0
+ * @version 2.0.7
  * @since   2.0.0 added
+ * @since   2.0.7 changed DelegatorAware* stuff
  */
 class Config extends ObjectAbstract implements ConfigInterface, WritableInterface, \ArrayAccess, ReferenceInterface, DelegatorAwareInterface
 {
@@ -92,9 +94,9 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
     /**
      * Constructor
      *
-     * @param  ConfigLoaderInterface $loader
-     * @param  TreeInterface $configTree
-     * @param  array $configData using this data if provided
+     * @param  ConfigLoaderInterface $loader config loader if any
+     * @param  TreeInterface $configTree config tree if any
+     * @param  array $configData config data for the tree
      * @access public
      * @api
      */
@@ -188,7 +190,7 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
      */
     public function setErrorType(/*# int */ $type)
     {
-        $this->error_type = $type;
+        $this->error_type = (int) $type;
         return $this;
     }
 
@@ -276,6 +278,28 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
     {
         // first field of the $id
         return explode($this->config->getDelimiter(), $id)[0];
+    }
+
+    /**
+     * Override 'referenceLookup()' in ReferenceTrait.
+     *
+     * Delegator support goes here
+     *
+     * {@inheritDoc}
+     */
+    protected function referenceLookup(/*# string */ $name)
+    {
+        if ($this->hasDelegator()) {
+            $delegator =  $this->getDelegator();
+            if ($delegator instanceof ChainingInterface) {
+                $val = $delegator->delegatedGet($name);
+            } else {
+                $val = $delegator->get($name);
+            }
+        } else {
+            $val = $this->getReference($name);
+        }
+        return $val;
     }
 
     /**

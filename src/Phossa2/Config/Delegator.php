@@ -16,10 +16,12 @@ namespace Phossa2\Config;
 
 use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
+use Phossa2\Config\Traits\ChainingTrait;
 use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Config\Interfaces\WritableInterface;
+use Phossa2\Config\Interfaces\ChainingInterface;
 use Phossa2\Config\Interfaces\DelegatorInterface;
 use Phossa2\Config\Traits\DelegatorWritableTrait;
 
@@ -34,12 +36,14 @@ use Phossa2\Config\Traits\DelegatorWritableTrait;
  * @see     DelegatorInterface
  * @see     \ArrayAccess
  * @see     WritableInterface
- * @version 2.0.0
+ * @see     ChainingInterface
+ * @version 2.0.7
  * @since   2.0.0 added
+ * @since   2.0.7 changed DelegatorInterface, added ChainingInterface
  */
-class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess, WritableInterface
+class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess, WritableInterface, ChainingInterface
 {
-    use ArrayAccessTrait, DelegatorWritableTrait;
+    use ArrayAccessTrait, DelegatorWritableTrait, ChainingTrait;
 
     /**
      * {@inheritDoc}
@@ -82,14 +86,6 @@ class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAcce
                 Message::CONFIG_NOT_WRITABLE
             );
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function isValidRegistry($registry)/*# : bool */
-    {
-        return $registry instanceof ConfigInterface;
     }
 
     /**

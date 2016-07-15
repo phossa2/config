@@ -25,12 +25,12 @@ namespace Phossa2\Config\Interfaces;
 interface WritableInterface
 {
     /**
-     * Set configuration
+     * Set value with $id
      *
-     * @param  string $id configuration id/key/name
+     * @param  string $id id/key/name
      * @param  mixed value
      * @return $this
-     * @throws LogicException if error type is to throw exception
+     * @throws LogicException if error happens
      * @access public
      * @api
      */
@@ -46,7 +46,7 @@ interface WritableInterface
     public function isWritable()/*# : bool */;
 
     /**
-     * Set to false or the writer object
+     * Set to true, false or the writer object
      *
      * @param  mixed|bool $writable
      * @return $this
