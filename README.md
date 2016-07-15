@@ -158,16 +158,16 @@ Usage
 
     Or being used in other configs as [references](#ref).
 
-  - Configuration file loading order
+  - Configuration files loading order
 
-    If the environment is set to `production/host1`, the config file loading
-    order is,
+    If the environment is set to `production/host1`, the config files loading
+    order are,
 
-    - `config/config/*.php`
+    1. `config/config/*.php`
 
-    - `config/production/*.php`
+    2. `config/production/*.php`
 
-    - `config/production/host1/*.php`
+    3. `config/production/host1/*.php`
 
     Configuration values are overwritten and replaced by later loaded files.
 
@@ -194,7 +194,7 @@ Usage
       'local' => [
           'driver' => 'filesystem',
           'params' => [
-              'root_dir'   => '${system.tmpdir}/cache',
+              'root_dir'   => '${system.tmpdir}/cache', // use reference here
               'hash_level' => 2
           ]
       ],
@@ -202,14 +202,14 @@ Usage
   ];
   ```
 
-  You may reset the reference start and ending matching pattern,
+  You may reset the reference start and ending matching pattern as follows,
 
   ```php
   // now reference is something like '%{system.tmpdir}%'
   $config->setReferencePattern('%{', '}%');
   ```
 
-- <a name="array"></a>ArrayAccess and dot notation
+- <a name="array"></a>ArrayAccess and DOT notation
 
   `Config` class implements `ArrayAccess` interface. So config values can be
   accessed just like an array.
@@ -299,7 +299,7 @@ Usage
     ```
   - Config chaining
 
-    Config chaining can be achieved via delegation feature. For example,
+    Config chaining can be achieved via multiple-level delegations. For example,
 
     ```php
     // configs
@@ -328,10 +328,9 @@ APIs
 
   - `get(string $id, $default = null): mixed`
 
-    `$id` is the a flat notation like `db.auth.host`. `$default` is used if
-    no config value found.
+    `$default` is used if no config value is found.
 
-    Return value might be a `string`, `array` or even `object`.
+    The return value might be a `string`, `array` or even `object`.
 
   - `has(string $id): bool`
 
@@ -344,7 +343,7 @@ APIs
     Set the configuration manually in this *session*. The value will **NOT**
     be reflected in any config files unless you modify config file manually.
 
-    `$value` can be a `string`, `array` or `object`.
+    `$value` may be a `string`, `array` or `object`.
 
     This feature can be disabled by
 

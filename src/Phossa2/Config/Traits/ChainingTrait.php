@@ -46,4 +46,7 @@ trait ChainingTrait
             return $this->get($id);
         }
     }
+
+    // from ConfigInterface
+    abstract public function get(/*# string */ $id, $default = null);
 }

@@ -290,7 +290,7 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
     protected function referenceLookup(/*# string */ $name)
     {
         if ($this->hasDelegator()) {
-            $delegator =  $this->getDelegator();
+            $delegator = $this->getDelegator();
             if ($delegator instanceof ChainingInterface) {
                 $val = $delegator->delegatedGet($name);
             } else {
