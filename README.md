@@ -387,6 +387,13 @@ APIs
 
     Added one `Phossa2\Config\Interfaces\ConfigInterface` instance to the delegator.
 
+- <a name="api_5"></a>Others
+
+  - `setErrorType(int $type): $this`
+
+    Set either `Config::ERROR_IGNORE`, `Config::ERROR_WARNING` or
+    `Config::ERROR_EXCEPTION` for the config.
+
 Dependencies
 ---
 

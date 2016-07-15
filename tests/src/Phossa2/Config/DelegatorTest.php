@@ -167,4 +167,45 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($config1->isWritable());
         $this->assertFalse($config2->isWritable());
     }
+
+    /**
+     * Delegator chaining & writable
+     *
+     * @covers Phossa2\Config\Reference\Delegator::delegatedGet()
+     */
+    public function testDelegatedGet()
+    {
+        $config1 = new Config();
+        $config2 = new Config();
+
+        // ignore errors
+        $config1->setErrorType(Config::ERROR_IGNORE);
+        $config2->setErrorType(Config::ERROR_IGNORE);
+
+        $delegator1 = new Delegator();
+        $delegator2 = new Delegator();
+
+        $config1['db.user'] = '${system.user}';
+        $config2['system.user'] = 'root';
+
+        // reference unresolved
+        $this->assertEquals('${system.user}', $config1['db.user']);
+
+        // delegation tree
+        $delegator1->addConfig($config1);
+        $delegator2->addConfig($delegator1);
+        $delegator2->addConfig($config2);
+
+        $this->assertEquals('root', $config1['db.user']);
+        $this->assertEquals('root', $delegator2['db.user']);
+
+        // set readonly
+        $config1->setWritable(false);
+        $config2->setWritable(false);
+
+        $this->assertFalse($delegator2->isWritable());
+        $delegator2->setWritable(true);
+        $this->assertTrue($config1->isWritable());
+        $this->assertFalse($config2->isWritable());
+    }
 }
