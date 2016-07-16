@@ -32,7 +32,7 @@ use Phossa2\Shared\Delegator\DelegatorInterface as GenericDelegatorInterface;
 interface DelegatorInterface extends GenericDelegatorInterface, ConfigInterface
 {
     /**
-     * Add config registry to the delegator
+     * Add one config registry to the delegator
      *
      * @param  ConfigInterface $config
      * @return $this

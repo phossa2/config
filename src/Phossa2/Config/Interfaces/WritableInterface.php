@@ -19,18 +19,18 @@ namespace Phossa2\Config\Interfaces;
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
- * @version 2.0.0
+ * @version 2.0.8
  * @since   2.0.0 added
+ * @since   2.0.8 removed exception from set()
  */
 interface WritableInterface
 {
     /**
-     * Set value with $id
+     * Set $id with value
      *
      * @param  string $id id/key/name
      * @param  mixed value
      * @return $this
-     * @throws LogicException if error happens
      * @access public
      * @api
      */

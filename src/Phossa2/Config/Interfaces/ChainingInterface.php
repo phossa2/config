@@ -24,8 +24,8 @@ use Phossa2\Shared\Delegator\DelegatorAwareInterface;
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
  * @see     DelegatorAwareInterface
- * @version 2.0.16
- * @since   2.0.16 added
+ * @version 2.0.7
+ * @since   2.0.7 added
  */
 interface ChainingInterface extends DelegatorAwareInterface
 {

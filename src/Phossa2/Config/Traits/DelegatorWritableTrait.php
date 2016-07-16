@@ -25,7 +25,7 @@ use Phossa2\Config\Interfaces\WritableInterface;
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
  * @see     WritableInterface
- * @version 2.0.0
+ * @version 2.0.8
  * @since   2.0.0 added
  * @since   2.0.7 changed to Delegator\DelegatorTrait
  */
@@ -60,33 +60,16 @@ trait DelegatorWritableTrait
      */
     public function setWritable($writable)
     {
-        // if is boolean
-        if (is_bool($writable)) {
-            if ($writable !== $this->isWritable()) {
-                $this->setRegistryWritable($writable);
-            }
-
-        // set the writer to valid registry
+        if ($writable === $this->isWritable()) {
+            return $this;
+        } elseif (false === $writable) {
+            $this->setRegistryWritableFalse();
+        } elseif (true === $writable) {
+            $this->setRegistryWritableTrue();
         } else {
             $this->writable = $writable;
         }
         return $this;
-    }
-
-    /**
-     * Set underlying registry writability
-     *
-     * @param  bool $writable
-     * @return $this
-     * @access protected
-     */
-    protected function setRegistryWritable(/*# bool */ $writable)
-    {
-        if (false === $writable) {
-            return $this->setRegistryWritableFalse();
-        } else {
-            return $this->setRegistryWritableTrue();
-        }
     }
 
     /**
