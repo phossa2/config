@@ -27,7 +27,6 @@ use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Config\Loader\ConfigLoaderInterface;
 use Phossa2\Shared\Reference\ReferenceInterface;
 use Phossa2\Config\Interfaces\WritableInterface;
-use Phossa2\Config\Interfaces\ChainingInterface;
 use Phossa2\Shared\Delegator\DelegatorAwareTrait;
 use Phossa2\Shared\Delegator\DelegatorAwareInterface;
 
@@ -45,6 +44,7 @@ use Phossa2\Shared\Delegator\DelegatorAwareInterface;
  * @version 2.0.8
  * @since   2.0.0 added
  * @since   2.0.7 changed DelegatorAware* stuff
+ * @since   2.0.10 using recursive getDelegator
  */
 class Config extends ObjectAbstract implements ConfigInterface, WritableInterface, \ArrayAccess, ReferenceInterface, DelegatorAwareInterface
 {
@@ -296,17 +296,15 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
      *
      * Delegator support goes here
      *
+     * @since 2.0.10 using recursive getDelegator
      * {@inheritDoc}
      */
     protected function referenceLookup(/*# string */ $name)
     {
         if ($this->hasDelegator()) {
-            $delegator = $this->getDelegator();
-            if ($delegator instanceof ChainingInterface) {
-                $val = $delegator->delegatedGet($name);
-            } else {
-                $val = $delegator->get($name);
-            }
+            // get delegator recursively
+            $delegator = $this->getDelegator(true);
+            $val = $delegator->get($name);
         } else {
             $val = $this->getReference($name);
         }

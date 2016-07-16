@@ -16,14 +16,14 @@ namespace Phossa2\Config;
 
 use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
-use Phossa2\Config\Traits\ChainingTrait;
 use Phossa2\Config\Traits\ArrayAccessTrait;
 use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Interfaces\ConfigInterface;
 use Phossa2\Config\Interfaces\WritableInterface;
-use Phossa2\Config\Interfaces\ChainingInterface;
 use Phossa2\Config\Interfaces\DelegatorInterface;
 use Phossa2\Config\Traits\DelegatorWritableTrait;
+use Phossa2\Shared\Delegator\DelegatorAwareTrait;
+use Phossa2\Shared\Delegator\DelegatorAwareInterface;
 
 /**
  * Delegator
@@ -36,14 +36,14 @@ use Phossa2\Config\Traits\DelegatorWritableTrait;
  * @see     DelegatorInterface
  * @see     \ArrayAccess
  * @see     WritableInterface
- * @see     ChainingInterface
  * @version 2.0.8
  * @since   2.0.0 added
  * @since   2.0.7 changed DelegatorInterface, added ChainingInterface
+ * @since   2.0.10 removed ChainingInterface
  */
-class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess, WritableInterface, ChainingInterface
+class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess, WritableInterface, DelegatorAwareInterface
 {
-    use ArrayAccessTrait, DelegatorWritableTrait, ChainingTrait;
+    use ArrayAccessTrait, DelegatorWritableTrait, DelegatorAwareTrait;
 
     /**
      * {@inheritDoc}
@@ -78,7 +78,7 @@ class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAcce
     public function set(/*# string */ $id, $value)
     {
         if ($this->isWritable()) {
-            $this->clearCache();
+            $this->clearLookupCache();
             $this->writable->set($id, $value);
             return $this;
         } else {

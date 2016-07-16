@@ -171,9 +171,9 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
     /**
      * Delegator chaining & writable
      *
-     * @covers Phossa2\Config\Reference\Delegator::delegatedGet()
+     * @covers Phossa2\Config\Reference\Delegator::get()
      */
-    public function testDelegatedGet()
+    public function testGet4()
     {
         $config1 = new Config();
         $config2 = new Config();
