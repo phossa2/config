@@ -62,7 +62,7 @@ class Message extends BaseMessage
     const CONFIG_ENV_UNKNOWN = 1606221013;
 
     /*
-     * Config is not writable
+     * Config is not writable for "%s"
      */
     const CONFIG_NOT_WRITABLE = 1606221014;
 
@@ -77,6 +77,6 @@ class Message extends BaseMessage
         self::CONFIG_GROUP_UNKNOWN => 'Config group "%s" unknown',
         self::CONFIG_GLOBAL_UNKNOWN => 'Uknown super global "%s"',
         self::CONFIG_ENV_UNKNOWN => 'Unknown environment "%s"',
-        self::CONFIG_NOT_WRITABLE => 'Config is not writable',
+        self::CONFIG_NOT_WRITABLE => 'Config is not writable for "%s"',
     ];
 }

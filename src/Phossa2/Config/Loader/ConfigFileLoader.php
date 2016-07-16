@@ -17,7 +17,6 @@ namespace Phossa2\Config\Loader;
 use Phossa2\Shared\Reader\Reader;
 use Phossa2\Config\Message\Message;
 use Phossa2\Shared\Base\ObjectAbstract;
-use Phossa2\Config\Exception\LogicException;
 use Phossa2\Config\Exception\InvalidArgumentException;
 
 /**
@@ -27,8 +26,9 @@ use Phossa2\Config\Exception\InvalidArgumentException;
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
- * @version 2.0.0
+ * @version 2.0.8
  * @since   2.0.0 added
+ * @since   2.0.8 updated
  */
 class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
 {
@@ -57,7 +57,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     protected $sub_dirs = [];
 
     /**
-     * subdirs to search
+     * default environment
      *
      * @var    string
      * @access protected
@@ -90,22 +90,19 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      */
     public function load(
         /*# string */ $group,
-        $environment = null
+        /*# string */ $environment = ''
     )/*# : array */ {
         $data = [];
-        foreach ($this->globFiles($group, $environment) as $file) {
+        $env  = $environment ?: $this->environment;
+
+        foreach ($this->globFiles($group, $env) as $file) {
             $grp = basename($file, '.' . $this->file_type);
             if (!isset($data[$grp])) {
                 $data[$grp] = [];
             }
-            try {
-                $data[$grp] = array_replace_recursive(
-                    $data[$grp],
-                    (array) Reader::readFile($file)
-                );
-            } catch (\Exception $e) {
-                throw new LogicException($e->getMessage(), $e->getCode());
-            }
+            $data[$grp] = array_replace_recursive(
+                $data[$grp], (array) Reader::readFile($file)
+            );
         }
         return $data;
     }
@@ -115,7 +112,7 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      *
      * @param  string $rootDir
      * @return $this
-     * @throws InvalidArgumentException if dir is bad
+     * @throws InvalidArgumentException if root dir is unknown
      * @access public
      * @api
      */
@@ -158,11 +155,10 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     }
 
     /**
-     * Set environment
+     * Set default environment
      *
      * @param  string $environment
      * @return $this
-     * @throws InvalidArgumentException if environment unknown
      * @access public
      * @api
      */
@@ -177,14 +173,13 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      * Returns an array of files to read from
      *
      * @param  string $group
-     * @param  null|string $environment
+     * @param  string $environment
      * @return array
-     * @throws InvalidArgumentException if environment unknown
      * @access protected
      */
     protected function globFiles(
         /*# string */ $group,
-        $environment
+        /*# string */ $environment
     )/*# : array */ {
         $files = [];
         $group = '' === $group ? '*' : $group;
@@ -198,15 +193,12 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     /**
      * Get the search directories
      *
-     * @param  string|null $environment
+     * @param  string $env
      * @return array
      * @access protected
      */
-    protected function getSearchDirs($environment)/*# : array */
+    protected function getSearchDirs(/*# string */ $env)/*# : array */
     {
-        // use default is NULL supplied
-        $env = $environment ?: $this->environment;
-
         if (!isset($this->sub_dirs[$env])) {
             $this->sub_dirs[$env] = $this->buildSearchDirs($env);
         }
@@ -216,26 +208,29 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     /**
      * Build search directories
      *
-     * @param  null|string $environment
+     * @param  string $env
      * @return array
-     * @throws InvalidArgumentException if environment unknown
      * @access protected
      */
-    protected function buildSearchDirs(/*# string */ $environment)/*# : array */
+    protected function buildSearchDirs(/*# string */ $env)/*# : array */
     {
+        // root
         $path = $this->root_dir;
-        $subs = preg_split(
-            '/[\/\\\]/', trim($environment, '/\\'), 0, \PREG_SPLIT_NO_EMPTY
+        $subdirs = [$path];
+
+        // part
+        $parts = preg_split(
+            '/[\/\\\]/', trim($env, '/\\'), 0, \PREG_SPLIT_NO_EMPTY
         );
 
-        $subdirs = [$path];
-        foreach ($subs as $dir) {
+        foreach ($parts as $dir) {
             $path .= $dir . \DIRECTORY_SEPARATOR;
             if (false === file_exists($path)) {
-                throw new InvalidArgumentException(
-                    Message::get(Message::CONFIG_ENV_UNKNOWN, $environment),
-                    Message::CONFIG_ENV_UNKNOWN
+                trigger_error(
+                    Message::get(Message::CONFIG_ENV_UNKNOWN, $env),
+                    \E_USER_WARNING
                 );
+                break;
             }
             $subdirs[] = $path;
         }

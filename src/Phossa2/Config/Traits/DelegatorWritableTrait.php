@@ -43,9 +43,7 @@ trait DelegatorWritableTrait
     public function isWritable()/*# : bool */
     {
         foreach ($this->lookup_pool as $reg) {
-            if ($reg instanceof WritableInterface &&
-                $reg->isWritable()
-            ) {
+            if ($reg instanceof WritableInterface && $reg->isWritable()) {
                 $this->setWritable($reg);
                 return true;
             }
@@ -60,14 +58,14 @@ trait DelegatorWritableTrait
      */
     public function setWritable($writable)
     {
-        if ($writable === $this->isWritable()) {
-            return $this;
+        if (is_object($writable)) {
+            $this->writable = $writable;
+
         } elseif (false === $writable) {
             $this->setRegistryWritableFalse();
-        } elseif (true === $writable) {
-            $this->setRegistryWritableTrue();
+
         } else {
-            $this->writable = $writable;
+            $this->setRegistryWritableTrue();
         }
         return $this;
     }
@@ -96,6 +94,12 @@ trait DelegatorWritableTrait
      */
     protected function setRegistryWritableTrue()
     {
+        // skip this
+        if ($this->isWritable()) {
+            return $this;
+        }
+
+        // do it
         foreach ($this->lookup_pool as $reg) {
             if ($reg instanceof WritableInterface) {
                 $reg->setWritable(true);

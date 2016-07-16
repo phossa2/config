@@ -21,21 +21,20 @@ use Phossa2\Shared\Base\ObjectAbstract;
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
- * @version 2.0.0
+ * @version 2.0.8
  * @since   2.0.0 added
  */
 class DummyLoader extends ObjectAbstract implements ConfigLoaderInterface
 {
     /**
-     * Returns empty array
+     * Always returns empty array
      *
      * {@inheritDoc}
      */
     public function load(
         /*# string */ $group,
-        $environment = null
+        /*# string */ $environment = ''
     )/*# : array */ {
-        $data = [];
-        return $data;
+        return [];
     }
 }

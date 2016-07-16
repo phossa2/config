@@ -19,25 +19,27 @@ namespace Phossa2\Config\Loader;
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
- * @version 2.0.0
+ * @version 2.0.8
  * @since   2.0.0 added
+ * @since   2.0.8 updated
  */
 interface ConfigLoaderInterface
 {
     /**
      * Load group configs base on environment.
      *
-     * Load all avaiable groups if $group is ''.
+     * - if $environment == '', use the default environment
+     * - if $group == '', load all avaiable groups
      *
      * @param  string $group
-     * @param  null|string $environment
+     * @param  string $environment
      * @return array
-     * @throws LogicException if something goes wrong
      * @access public
+     * @since  2.0.8 default environment to '', removed exception
      * @api
      */
     public function load(
         /*# string */ $group,
-        $environment = null
+        /*# string */ $environment = ''
     )/*# : array */;
 }

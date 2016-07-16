@@ -14,6 +14,8 @@
 
 namespace Phossa2\Config\Interfaces;
 
+use Phossa2\Config\Exception\LogicException;
+
 /**
  * WritableInterface
  *
@@ -21,7 +23,6 @@ namespace Phossa2\Config\Interfaces;
  * @author  Hong Zhang <phossa@126.com>
  * @version 2.0.8
  * @since   2.0.0 added
- * @since   2.0.8 removed exception from set()
  */
 interface WritableInterface
 {
@@ -31,6 +32,7 @@ interface WritableInterface
      * @param  string $id id/key/name
      * @param  mixed value
      * @return $this
+     * @throws LogicException if not writable
      * @access public
      * @api
      */

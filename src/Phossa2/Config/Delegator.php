@@ -28,7 +28,7 @@ use Phossa2\Config\Traits\DelegatorWritableTrait;
 /**
  * Delegator
  *
- * Implmentation of DelegatorInterface
+ * Delegator for config
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
@@ -82,7 +82,7 @@ class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAcce
             return $this;
         } else {
             throw new LogicException(
-                Message::get(Message::CONFIG_NOT_WRITABLE),
+                Message::get(Message::CONFIG_NOT_WRITABLE, $id),
                 Message::CONFIG_NOT_WRITABLE
             );
         }

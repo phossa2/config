@@ -92,6 +92,18 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
     protected $error_type = self::ERROR_WARNING;
 
     /**
+     * @var    string
+     * @access private
+     */
+    private $cached_id;
+
+    /**
+     * @var    mixed
+     * @access private
+     */
+    private $cached_value;
+
+    /**
      * Constructor
      *
      * @param  ConfigLoaderInterface $loader config loader if any
@@ -114,23 +126,16 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
      */
     public function get(/*# string */ $id, $default = null)
     {
-        try {
-            // lazy load
-            $this->loadConfig((string) $id);
-
-            //  get value
-            $val = $this->config->getNode((string) $id);
+        if ($this->has($id)) {
+            // cached from has()
+            $val = $this->cached_value;
 
             // dereference
             $this->deReferenceArray($val);
 
             return null === $val ? $default : $val;
-
-        // if dereference exception catched
-        } catch (\Exception $e) {
-            $this->throwError($e->getMessage(), $e->getCode());
-            return $default;
         }
+        return $default;
     }
 
     /**
@@ -138,23 +143,23 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
      */
     public function has(/*# string */ $id)/*# : bool */
     {
+        // checked already
+        if ($id === $this->cached_id) {
+            return null !== $this->cached_value;
+        }
+
+        // default result
+        $this->cached_id = $id;
+        $this->cached_value = null;
+
+        // try get config
         try {
-            // update error type
-            $err = $this->error_type;
-            $this->setErrorType(self::ERROR_IGNORE);
-
-            // lazy load
             $this->loadConfig((string) $id);
-
-            //  get value
-            $result = null !== $this->config->getNode((string) $id);
-
-            // restore error type
-            $this->setErrorType($err);
-
-            return $result;
+            $this->cached_value = $this->config->getNode((string) $id);
+            return null !== $this->cached_value;
 
         } catch (\Exception $e) {
+            $this->throwError($e->getMessage(), $e->getCode());
             return false;
         }
     }
@@ -169,6 +174,7 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
             $this->loadConfig((string) $id);
 
             // replace the node
+            $this->cached_id = null;
             $this->config->addNode($id, $value);
 
             return $this;
@@ -229,12 +235,12 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
      */
     protected function loadByGroup(/*# string */ $group)
     {
-        // if super global
-        if (substr($group, 0, 1) === '_') {
+        // load super global
+        if ('' !== $group && '_' === $group[0]) {
             return $this->loadGlobal($group);
         }
 
-        // load from config file
+        // load from config
         $conf = $this->loader->load($group);
 
         foreach ($conf as $grp => $data) {
@@ -249,13 +255,13 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
      *
      * @param  string $group
      * @return $this
-     * @throws LogicException if global unknown
+     * @throws LogicException if super global unknown
      * @access protected
      */
     protected function loadGlobal(/*# string */ $group)
     {
         if (!isset($GLOBALS[$group])) {
-            throw new LogicException(
+            $this->throwError(
                 Message::get(Message::CONFIG_GLOBAL_UNKNOWN, $group),
                 Message::CONFIG_GLOBAL_UNKNOWN
             );
@@ -270,14 +276,19 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
     /**
      * Get group name
      *
+     * - returns 'system' from $id 'system.dir.tmp'
+     * - '.system.tmpdir' is invalid
+     *
      * @param  string $id
      * @return string
      * @access protected
      */
     protected function getGroupName(/*# string */ $id)/*# : string */
     {
-        // first field of the $id
-        return explode($this->config->getDelimiter(), $id)[0];
+        return explode(
+            $this->config->getDelimiter(),
+            ltrim($id, $this->config->getDelimiter())
+        )[0];
     }
 
     /**
