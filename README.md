@@ -6,10 +6,10 @@
 [![Latest Stable Version](https://img.shields.io/packagist/vpre/phossa2/config.svg?style=flat)](https://packagist.org/packages/phossa2/config)
 [![License](https://poser.pugx.org/phossa2/config/license)](http://mit-license.org/)
 
-**phossa2/config** is a simple, easy yet powerful configuration management
-library for PHP. The design idea is inspired by another github project
-[mrjgreen/config](https://github.com/ecfectus/config) but with some cool
-features.
+**phossa2/config** is a simple, easy to use, yet powerful configuration
+management library for PHP. The design idea was inspired by another github
+project [mrjgreen/config](https://github.com/ecfectus/config) but some cool
+features added.
 
 It requires PHP 5.4, supports PHP 7.0+ and HHVM. It is compliant with
 [PSR-1][PSR-1], [PSR-2][PSR-2], [PSR-4][PSR-4].
@@ -31,7 +31,7 @@ or add the following lines to your `composer.json`
 ```json
 {
     "require": {
-       "phossa2/config": "^2.0.7"
+       "phossa2/config": "^2.0.8"
     }
 }
 ```
@@ -39,7 +39,7 @@ or add the following lines to your `composer.json`
 Features
 ---
 
-- Simple interface with `get($id, $default = null)` and `has($id)`.
+- Simple interface, `get($id, $default = null)` and `has($id)`.
 
 - One central place for all config files for ease of management.
 
@@ -88,7 +88,7 @@ Usage
 
   Usually application running environment is different on different servers. A
   good practice is setting environment in a `.env` file somewhere on the host,
-  and put all configuration files in one central `config/` dir.
+  and put all configuration files in one central `config/` directory.
 
   A sample `.env` file,
 
@@ -171,7 +171,8 @@ Usage
 
     3. `config/production/host1/*.php`
 
-    Configuration values are overwritten and replaced by later loaded files.
+    Configuration values are overwritten and replaced those from later loaded
+    files.
 
 - <a name="ref"></a>Use of references
 

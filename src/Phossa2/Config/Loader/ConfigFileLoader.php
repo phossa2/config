@@ -214,16 +214,13 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
      */
     protected function buildSearchDirs(/*# string */ $env)/*# : array */
     {
-        // root
         $path = $this->root_dir;
-        $subdirs = [$path];
 
-        // part
-        $parts = preg_split(
+        $part = preg_split(
             '/[\/\\\]/', trim($env, '/\\'), 0, \PREG_SPLIT_NO_EMPTY
         );
-
-        foreach ($parts as $dir) {
+        $subdirs = [$path];
+        foreach ($part as $dir) {
             $path .= $dir . \DIRECTORY_SEPARATOR;
             if (false === file_exists($path)) {
                 trigger_error(
