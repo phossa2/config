@@ -37,7 +37,7 @@ use Phossa2\Config\Traits\DelegatorWritableTrait;
  * @see     \ArrayAccess
  * @see     WritableInterface
  * @see     ChainingInterface
- * @version 2.0.7
+ * @version 2.0.8
  * @since   2.0.0 added
  * @since   2.0.7 changed DelegatorInterface, added ChainingInterface
  */
