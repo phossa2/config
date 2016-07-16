@@ -78,6 +78,7 @@ class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAcce
     public function set(/*# string */ $id, $value)
     {
         if ($this->isWritable()) {
+            $this->clearCache();
             $this->writable->set($id, $value);
             return $this;
         } else {
