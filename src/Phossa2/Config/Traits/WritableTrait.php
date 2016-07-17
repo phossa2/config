@@ -47,9 +47,9 @@ trait WritableTrait
     /**
      * {@inheritDoc}
      */
-    public function setWritable($writable)
+    public function setWritable($writable)/*# : bool */
     {
         $this->writable = $writable;
-        return $this;
+        return true;
     }
 }

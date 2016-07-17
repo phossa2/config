@@ -51,9 +51,9 @@ interface WritableInterface
      * Set to true, false or the writer object
      *
      * @param  mixed|bool $writable
-     * @return $this
+     * @return bool true for success, false for failure
      * @access public
      * @api
      */
-    public function setWritable($writable);
+    public function setWritable($writable)/*# : bool */;
 }

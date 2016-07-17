@@ -57,56 +57,59 @@ trait DelegatorWritableTrait
      *
      * {@inheritDoc}
      */
-    public function setWritable($writable)
+    public function setWritable($writable)/*# : bool */
     {
         if (is_object($writable)) {
             $this->writable = $writable;
 
         } elseif (false === $writable) {
-            $this->setRegistryWritableFalse();
+            return $this->setRegistryWritableFalse();
 
-        } else {
-            $this->setRegistryWritableTrue();
+        } elseif (!$this->isWritable()) {
+            return $this->setRegistryWritableTrue();
         }
-        return $this;
+
+        return true;
     }
 
     /**
      * Set writable to FALSE in all registries
      *
-     * @return $this
+     * @return bool
      * @access protected
      */
-    protected function setRegistryWritableFalse()
+    protected function setRegistryWritableFalse()/*# : bool */
     {
+        $res = true;
         foreach ($this->lookup_pool as $reg) {
             if ($reg instanceof WritableInterface) {
-                $reg->setWritable(false);
+                $res = $reg->setWritable(false);
+            }
+            if (false === $res) {
+                return $res;
             }
         }
-        return $this;
+        return $res;
     }
 
     /**
      * Set writable to TRUE at first matching registry
      *
-     * @return $this
+     * @return bool
      * @access protected
      */
-    protected function setRegistryWritableTrue()
+    protected function setRegistryWritableTrue()/*# : bool */
     {
-        // skip this
-        if ($this->isWritable()) {
-            return $this;
-        }
-
-        // do it
+        $res = false;
         foreach ($this->lookup_pool as $reg) {
             if ($reg instanceof WritableInterface) {
-                $reg->setWritable(true);
-                break;
+                $res = $reg->setWritable(true);
+            }
+
+            if (true === $res) {
+                return $res;
             }
         }
-        return $this;
+        return $res;
     }
 }

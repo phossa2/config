@@ -355,9 +355,9 @@ APIs
     $config->setWritable(false);
     ```
 
-  - `setWritable(bool $writable): $this`
+  - `setWritable(bool $writable): bool`
 
-    Enable or disable the `set()` functionality.
+    Enable or disable the `set()` functionality. Returns `true` on success.
 
   - `isWritable(): bool`
 

@@ -96,8 +96,8 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
     public function testGet3()
     {
         // both writable now
-        $config1 = (new Config())->setWritable(true);
-        $config2 = (new Config())->setWritable(true);
+        $config1 = new Config();
+        $config2 = new Config();
 
         $config1->setErrorType(Config::ERROR_IGNORE);
         $config2->setErrorType(Config::ERROR_IGNORE);
@@ -145,8 +145,11 @@ class DelegatorTest extends \PHPUnit_Framework_TestCase
     public function testSetWritable()
     {
         // both readonly
-        $config1 = (new Config())->setWritable(false);
-        $config2 = (new Config())->setWritable(false);
+        $config1 = new Config();
+        $config2 = new Config();
+
+        $config1->setWritable(false);
+        $config2->setWritable(false);
 
         $delegator = new Delegator();
         $delegator->addConfig($config1);
