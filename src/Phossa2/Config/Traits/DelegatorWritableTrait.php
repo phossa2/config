@@ -44,6 +44,7 @@ trait DelegatorWritableTrait
     {
         foreach ($this->lookup_pool as $reg) {
             if ($reg instanceof WritableInterface && $reg->isWritable()) {
+                $this->clearLookupCache();
                 $this->setWritable($reg);
                 return true;
             }
