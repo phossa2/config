@@ -80,16 +80,13 @@ trait DelegatorWritableTrait
      */
     protected function setRegistryWritableFalse()/*# : bool */
     {
-        $res = true;
         foreach ($this->lookup_pool as $reg) {
-            if ($reg instanceof WritableInterface) {
-                $res = $reg->setWritable(false);
-            }
-            if (false === $res) {
-                return $res;
+            if ($reg instanceof WritableInterface &&
+                !$reg->setWritable(false)) {
+                return false;
             }
         }
-        return $res;
+        return true;
     }
 
     /**
@@ -100,16 +97,12 @@ trait DelegatorWritableTrait
      */
     protected function setRegistryWritableTrue()/*# : bool */
     {
-        $res = false;
         foreach ($this->lookup_pool as $reg) {
-            if ($reg instanceof WritableInterface) {
-                $res = $reg->setWritable(true);
-            }
-
-            if (true === $res) {
-                return $res;
+            if ($reg instanceof WritableInterface &&
+                $reg->setWritable(true)) {
+                return true;
             }
         }
-        return $res;
+        return false;
     }
 }
