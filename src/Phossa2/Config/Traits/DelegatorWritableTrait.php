@@ -59,7 +59,7 @@ trait DelegatorWritableTrait
      */
     public function setWritable($writable)/*# : bool */
     {
-        if (is_object($writable)) {
+        if (!is_bool($writable)) {
             $this->writable = $writable;
 
         } elseif (false === $writable) {
