@@ -32,7 +32,7 @@ interface WritableInterface
      *
      * @param  string $id id/key/name
      * @param  mixed value
-     * @return true on success and false on failure
+     * @return bool true on success and false on failure
      * @throws LogicException if not writable
      * @access public
      * @since  2.0.12 changed return value to bool
