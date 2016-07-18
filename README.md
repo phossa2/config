@@ -31,7 +31,7 @@ or add the following lines to your `composer.json`
 ```json
 {
     "require": {
-       "phossa2/config": "^2.0.8"
+       "phossa2/config": "^2.0.12"
     }
 }
 ```
@@ -341,7 +341,7 @@ APIs
 
 - <a name="api_2"></a>`WritableInterface` API
 
-  - `set(string $id, mixed $value): $this`
+  - `set(string $id, mixed $value): bool`
 
     Set the configuration manually in this *session*. The value will **NOT**
     be reflected in any config files unless you modify config file manually.
@@ -403,7 +403,7 @@ Dependencies
 
 - PHP >= 5.4.0
 
-- phossa2/shared >= 2.0.15
+- phossa2/shared >= 2.0.19
 
 License
 ---

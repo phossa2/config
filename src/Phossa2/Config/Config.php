@@ -41,10 +41,11 @@ use Phossa2\Shared\Delegator\DelegatorAwareInterface;
  * @see     \ArrayAccess
  * @see     ReferenceInterface
  * @see     DelegatorAwareInterface
- * @version 2.0.8
+ * @version 2.0.12
  * @since   2.0.0 added
  * @since   2.0.7 changed DelegatorAware* stuff
  * @since   2.0.10 using recursive getDelegator
+ * @since   2.0.12 changed set() return value
  */
 class Config extends ObjectAbstract implements ConfigInterface, WritableInterface, \ArrayAccess, ReferenceInterface, DelegatorAwareInterface
 {
@@ -167,7 +168,7 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
     /**
      * {@inheritDoc}
      */
-    public function set(/*# string */ $id, $value)
+    public function set(/*# string */ $id, $value)/*# : bool */
     {
         if ($this->isWritable()) {
             // lazy load, no dereference
@@ -177,7 +178,7 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
             $this->cached_id = null;
             $this->config->addNode($id, $value);
 
-            return $this;
+            return $this->has($id);
         } else {
             $this->throwError(
                 Message::get(Message::CONFIG_NOT_WRITABLE),

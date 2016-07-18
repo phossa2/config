@@ -54,5 +54,5 @@ trait ArrayAccessTrait
     abstract public function get(/*# string */ $id, $default = null);
 
     // from WritableInterface
-    abstract public function set(/*# string */ $id, $value);
+    abstract public function set(/*# string */ $id, $value)/*#: bool */;
 }

@@ -21,8 +21,9 @@ use Phossa2\Config\Exception\LogicException;
  *
  * @package Phossa2\Config
  * @author  Hong Zhang <phossa@126.com>
- * @version 2.0.8
+ * @version 2.0.12
  * @since   2.0.0 added
+ * @since   2.0.12 changed set() return value
  */
 interface WritableInterface
 {
@@ -31,12 +32,13 @@ interface WritableInterface
      *
      * @param  string $id id/key/name
      * @param  mixed value
-     * @return $this
+     * @return true on success and false on failure
      * @throws LogicException if not writable
      * @access public
+     * @since  2.0.12 changed return value to bool
      * @api
      */
-    public function set(/*# string */ $id, $value);
+    public function set(/*# string */ $id, $value)/*# : bool */;
 
     /**
      * Is writable ?

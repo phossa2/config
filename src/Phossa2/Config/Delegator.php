@@ -36,10 +36,11 @@ use Phossa2\Shared\Delegator\DelegatorAwareInterface;
  * @see     DelegatorInterface
  * @see     \ArrayAccess
  * @see     WritableInterface
- * @version 2.0.8
+ * @version 2.0.12
  * @since   2.0.0 added
  * @since   2.0.7 changed DelegatorInterface, added ChainingInterface
  * @since   2.0.10 removed ChainingInterface
+ * @since   2.0.12 changed set() return value
  */
 class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAccess, WritableInterface, DelegatorAwareInterface
 {
@@ -73,13 +74,15 @@ class Delegator extends ObjectAbstract implements DelegatorInterface, \ArrayAcce
     }
 
     /**
+     * @since 2.0.12 changed return value
+     *
      * {@inheritDoc}
      */
-    public function set(/*# string */ $id, $value)
+    public function set(/*# string */ $id, $value)/*# : bool */
     {
         if ($this->isWritable()) {
             $this->writable->set($id, $value);
-            return $this;
+            return $this->writable->has($id);
         } else {
             throw new LogicException(
                 Message::get(Message::CONFIG_NOT_WRITABLE, $id),
