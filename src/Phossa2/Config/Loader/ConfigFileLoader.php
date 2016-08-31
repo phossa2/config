@@ -216,7 +216,6 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
     protected function buildSearchDirs(/*# string */ $env)/*# : array */
     {
         $path = $this->root_dir;
-
         $part = preg_split(
             '/[\/\\\]/',
             trim($env, '/\\'),
@@ -235,7 +234,6 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
             }
             $subdirs[] = $path;
         }
-
         return $subdirs;
     }
 }
