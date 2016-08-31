@@ -61,10 +61,8 @@ trait DelegatorWritableTrait
     {
         if (!is_bool($writable)) {
             $this->writable = $writable;
-
         } elseif (false === $writable) {
             return $this->setRegistryWritableFalse();
-
         } elseif (!$this->isWritable()) {
             return $this->setRegistryWritableTrue();
         }

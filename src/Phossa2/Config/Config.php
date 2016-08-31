@@ -158,7 +158,6 @@ class Config extends ObjectAbstract implements ConfigInterface, WritableInterfac
             $this->loadConfig((string) $id);
             $this->cached_value = $this->config->getNode((string) $id);
             return null !== $this->cached_value;
-
         } catch (\Exception $e) {
             $this->throwError($e->getMessage(), $e->getCode());
             return false;

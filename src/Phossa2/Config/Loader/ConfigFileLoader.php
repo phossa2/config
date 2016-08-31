@@ -101,7 +101,8 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
                 $data[$grp] = [];
             }
             $data[$grp] = array_replace_recursive(
-                $data[$grp], (array) Reader::readFile($file)
+                $data[$grp],
+                (array) Reader::readFile($file)
             );
         }
         return $data;
@@ -217,7 +218,10 @@ class ConfigFileLoader extends ObjectAbstract implements ConfigLoaderInterface
         $path = $this->root_dir;
 
         $part = preg_split(
-            '/[\/\\\]/', trim($env, '/\\'), 0, \PREG_SPLIT_NO_EMPTY
+            '/[\/\\\]/',
+            trim($env, '/\\'),
+            0,
+            \PREG_SPLIT_NO_EMPTY
         );
         $subdirs = [$path];
         foreach ($part as $dir) {
