@@ -4,7 +4,7 @@
     "license": "MIT",
     "homepage": "https://github.com/phossa2/config",
     "description": "A simple, easy to use, yet powerful configuration management library for PHP.",
-    "keywords": [ "phossa2", "configuration", "configure", "config" ],
+    "keywords": ["phossa2", "phossa", "configuration", "configure", "config"],
     "authors": [
         {
             "name": "Hong Zhang",
@@ -13,14 +13,14 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "phossa2/shared": "^2.0.18"
+        "phossa2/shared": "^2.0.21"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*",
         "squizlabs/php_codesniffer": "2.*"
     },
     "autoload": {
-        "psr-0": { "Phossa2\\Config\\": "src/" }
+        "psr-4": { "Phossa2\\Config\\": "src/Config/" }
     },
     "scripts": {
         "test": "phpunit",
@@ -32,16 +32,9 @@
             "php": "5.4.0"
         }
     },
-    "provide": {
-        "phossa2/config-implementation": "^2.0"
-    },
-    "replace": {
-        "phossa/phossa-config": "*"
-    },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-master": "2.1-dev"
         }
     },
     "archive": {
