@@ -198,6 +198,27 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test no dereference
+     *
+     * @covers Phossa2\Config\Reference\Config::get5()
+     */
+    public function testGet5()
+    {
+        // use newest value to expand
+        $object = new Config(
+            new ConfigFileLoader(__DIR__.'/testData', 'develop')
+        );
+
+        // disable dereference
+        $object->enableDeReference(false);
+
+        $this->assertEquals(
+            '${wow.user}',
+            $object->get('wow.new_array.d1')
+        );
+    }
+
+    /**
      * @covers Phossa2\Config\Reference\Config::set()
      */
     public function testSet()

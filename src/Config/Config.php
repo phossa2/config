@@ -41,11 +41,11 @@ use Phossa2\Shared\Delegator\DelegatorAwareInterface;
  * @see     \ArrayAccess
  * @see     ReferenceInterface
  * @see     DelegatorAwareInterface
- * @version 2.0.12
+ * @version 2.1.0
  * @since   2.0.0 added
  * @since   2.0.7 changed DelegatorAware* stuff
  * @since   2.0.10 using recursive getDelegator
- * @since   2.0.12 changed set() return value
+ * @since   2.0.12 changed `set()` return value
  */
 class Config extends ObjectAbstract implements ConfigInterface, WritableInterface, \ArrayAccess, ReferenceInterface, DelegatorAwareInterface
 {
