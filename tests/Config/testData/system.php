@@ -5,5 +5,5 @@
 return [
     'user' => 'www',
     'db.user' => '${system.user}',
-    'logger.level' => 'warning'
+    'logger.level' => 'warning',
 ];

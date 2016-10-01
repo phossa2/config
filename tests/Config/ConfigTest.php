@@ -62,6 +62,29 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test late expansion
+     *
+     * @covers Phossa2\Config\Reference\Config::get()
+     */
+    public function testGet0()
+    {
+        // use newest value to expand
+        $object = new Config(
+            new ConfigFileLoader(__DIR__.'/testData', 'develop')
+        );
+        $this->assertEquals(
+            'wow',
+            $object->get('wow.new_user')
+        );
+
+        $this->assertTrue($object->has('wow.new_array'));
+        $data = $object->get('wow.new_array');
+        $this->assertEquals('a1', $data['a1']);
+        $this->assertEquals('wow', $data['d1']);
+        $this->assertEquals(['b3', 'b4'], $data['b1']);
+    }
+
+    /**
      * Test root level config
      *
      * @covers Phossa2\Config\Reference\Config::get()
