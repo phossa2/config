@@ -1,4 +1,7 @@
-# phossa2/config
+# phossa2/config [ABANDONED]
+
+**PLEASE USE [phoole/config](https://github.com/phoole/config) library instead**
+
 [![Build Status](https://travis-ci.org/phossa2/config.svg?branch=master)](https://travis-ci.org/phossa2/config)
 [![Code Quality](https://scrutinizer-ci.com/g/phossa2/config/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/phossa2/config/)
 [![Code Climate](https://codeclimate.com/github/phossa2/config/badges/gpa.svg)](https://codeclimate.com/github/phossa2/config)
